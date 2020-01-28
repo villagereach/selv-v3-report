@@ -19,9 +19,9 @@ import java.util.UUID;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.dto.external.referencedata.UserDto;
 import org.openlmis.selv.report.exception.AuthenticationMessageException;
+import org.openlmis.selv.report.i18n.AuthorizationMessageKeys;
 import org.openlmis.selv.report.service.referencedata.RightReferenceDataService;
 import org.openlmis.selv.report.service.referencedata.UserReferenceDataService;
-import org.openlmis.selv.report.i18n.AuthorizationMessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ public class AuthenticationHelper {
    * and fetches his data from reference-data service.
    *
    * @return UserDto entity of current user.
-   * @throws org.openlmis.selv.report.exception.AuthenticationMessageException if user cannot be found.
+   * @throws AuthenticationMessageException if user cannot be found.
    */
   public UserDto getCurrentUser() {
     UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

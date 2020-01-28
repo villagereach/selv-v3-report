@@ -60,9 +60,9 @@ public class JasperTemplateDto implements Exporter {
   private List<JasperTemplateParameter.Exporter> templateParameters;
 
   /**
-   * Create new list of JasperTemplateDto based on given list of {@link org.openlmis.selv.report.domain.JasperTemplate}.
+   * Create new list of JasperTemplateDto based on given list of {@link JasperTemplate}.
    *
-   * @param templates list of {@link org.openlmis.selv.report.domain.JasperTemplate}
+   * @param templates list of {@link JasperTemplate}
    * @return new list of JasperTemplateDto.
    */
   public static List<JasperTemplateDto> newInstance(Iterable<JasperTemplate> templates) {

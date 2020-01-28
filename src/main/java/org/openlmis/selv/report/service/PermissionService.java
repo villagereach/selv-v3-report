@@ -51,7 +51,7 @@ public class PermissionService {
 
   /**
    * Checks whether user has the given set of rights.
-   * Throws {@link org.openlmis.selv.report.exception.PermissionMessageException} if doesn't have all of these permissions.
+   * Throws {@link PermissionMessageException} if doesn't have all of these permissions.
    *
    * @param rights names of rights to check
    */

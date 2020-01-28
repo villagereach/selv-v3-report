@@ -59,7 +59,7 @@ public class JasperReportsViewService {
    * @param jasperTemplate template that will be used to create a view
    * @param request  it is used to take web application context
    * @return created jasper view.
-   * @throws org.openlmis.selv.report.exception.JasperReportViewException if there will be any problem with creating the view.
+   * @throws JasperReportViewException if there will be any problem with creating the view.
    */
   public JasperReportsMultiFormatView getJasperReportsView(
       JasperTemplate jasperTemplate, HttpServletRequest request) throws JasperReportViewException {

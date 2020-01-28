@@ -1,7 +1,7 @@
 version: "2"
 services:
 
-  report:
+  selv-v3-report:
     image: openlmis/dev:5.2
     ports:
       - "8080:8080"

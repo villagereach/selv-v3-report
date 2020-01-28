@@ -25,7 +25,6 @@ import static org.openlmis.selv.report.i18n.ReportingMessageKeys.ERROR_REPORTING
 import static org.openlmis.selv.report.i18n.ReportingMessageKeys.ERROR_REPORTING_FILE_MISSING;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
 import java.util.UUID;
 import org.junit.Rule;

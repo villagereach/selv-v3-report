@@ -37,7 +37,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.openlmis.report.exception.DataRetrievalException;
+import org.openlmis.selv.report.exception.DataRetrievalException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

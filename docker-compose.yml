@@ -2,7 +2,7 @@ version: "2"
 services:
 
   report:
-    image: openlmismz/report
+    image: openlmismz/selv-v3-report
     links:
       - db
       - log

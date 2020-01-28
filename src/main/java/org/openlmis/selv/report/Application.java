@@ -46,7 +46,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-@SpringBootApplication(scanBasePackages = "org.openlmis.report")
+@SpringBootApplication(scanBasePackages = "org.openlmis.selv.report")
 @EntityScan(basePackageClasses = BaseEntity.class)
 public class Application {
   private static Logger LOGGER = LoggerFactory.getLogger(Application.class);

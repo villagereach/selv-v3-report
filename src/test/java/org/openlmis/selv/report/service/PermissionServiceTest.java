@@ -18,8 +18,8 @@ package org.openlmis.selv.report.service;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.openlmis.report.service.PermissionService.REPORTS_VIEW;
-import static org.openlmis.report.service.PermissionService.REPORT_TEMPLATES_EDIT;
+import static org.openlmis.selv.report.service.PermissionService.REPORTS_VIEW;
+import static org.openlmis.selv.report.service.PermissionService.REPORT_TEMPLATES_EDIT;
 
 import java.util.UUID;
 import org.junit.Test;
@@ -27,12 +27,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.openlmis.report.dto.external.ResultDto;
-import org.openlmis.report.dto.external.referencedata.RightDto;
-import org.openlmis.report.dto.external.referencedata.UserDto;
-import org.openlmis.report.exception.PermissionMessageException;
-import org.openlmis.report.service.referencedata.UserReferenceDataService;
-import org.openlmis.report.utils.AuthenticationHelper;
+import org.openlmis.selv.report.dto.external.ResultDto;
+import org.openlmis.selv.report.dto.external.referencedata.RightDto;
+import org.openlmis.selv.report.dto.external.referencedata.UserDto;
+import org.openlmis.selv.report.exception.PermissionMessageException;
+import org.openlmis.selv.report.service.referencedata.UserReferenceDataService;
+import org.openlmis.selv.report.utils.AuthenticationHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("PMD.TooManyMethods")

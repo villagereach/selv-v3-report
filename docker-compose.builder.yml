@@ -47,7 +47,7 @@ services:
 
   image:
     build: .
-    image: openlmismz/report
+    image: openlmismz/selv-v3-report
 
   db:
     image: openlmis/postgres:9.6

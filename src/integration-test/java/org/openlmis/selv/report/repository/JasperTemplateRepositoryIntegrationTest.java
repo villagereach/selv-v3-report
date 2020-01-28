@@ -23,8 +23,8 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Collections;
 import org.junit.Test;
-import org.openlmis.report.domain.JasperTemplate;
-import org.openlmis.report.domain.JasperTemplateParameter;
+import org.openlmis.selv.report.domain.JasperTemplate;
+import org.openlmis.selv.report.domain.JasperTemplateParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class JasperTemplateRepositoryIntegrationTest extends

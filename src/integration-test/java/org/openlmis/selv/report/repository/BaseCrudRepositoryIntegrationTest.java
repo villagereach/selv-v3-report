@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openlmis.report.domain.BaseEntity;
+import org.openlmis.selv.report.domain.BaseEntity;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.annotation.DirtiesContext;

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.openlmis.report.security.CustomUserAuthenticationConverter.REFERENCE_DATA_USER_ID;
+import static org.openlmis.selv.report.security.CustomUserAuthenticationConverter.REFERENCE_DATA_USER_ID;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;

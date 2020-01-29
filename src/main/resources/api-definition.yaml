@@ -31,6 +31,19 @@ schemas:
 
   - localizedMessage: !include schemas/localizedMessage.json
 
+  - localizedErrorResponse: |
+      {
+        "type": "object",
+        "$schema": "http://json-schema.org/draft-04/schema",
+        "title": "LocalizedErrorResponse",
+        "description": "Localized Error response",
+        "properties": {
+          "messageKey": { "type": "string", "title": "message key" },
+          "message": { "type": "string", "title": "message" }
+        },
+        "required": ["messageKey"]
+      }
+
   - geographicLevel: !include schemas/geographicLevel.json
 
   - geographicZone: !include schemas/geographicZone.json

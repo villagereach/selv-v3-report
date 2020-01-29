@@ -17,20 +17,25 @@ package org.openlmis.selv.report.service;
 
 import static org.openlmis.selv.report.i18n.PermissionMessageKeys.ERROR_NO_PERMISSION;
 
+import java.util.UUID;
 import org.openlmis.selv.report.dto.external.ResultDto;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.dto.external.referencedata.UserDto;
+import org.openlmis.selv.report.dto.external.requisition.RequisitionDto;
 import org.openlmis.selv.report.exception.PermissionMessageException;
 import org.openlmis.selv.report.service.referencedata.UserReferenceDataService;
 import org.openlmis.selv.report.utils.AuthenticationHelper;
 import org.openlmis.selv.report.utils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PermissionService {
   static final String REPORT_TEMPLATES_EDIT = "REPORT_TEMPLATES_EDIT";
   public static final String REPORTS_VIEW = "REPORTS_VIEW";
+  public static final String REQUISITION_VIEW = "REQUISITION_VIEW";
 
   @Autowired
   private AuthenticationHelper authenticationHelper;
@@ -63,10 +68,38 @@ public class PermissionService {
     }
   }
 
+  /**
+   * Checks if current user has permission to view a requisition.
+   */
+  public void canViewRequisition(RequisitionDto requisition) {
+    checkPermission(REQUISITION_VIEW, requisition.getProgram().getId(),
+        requisition.getFacility().getId(), null);
+  }
+
   private void checkPermission(String rightName) {
     if (!hasPermission(rightName)) {
       throw new PermissionMessageException(new Message(ERROR_NO_PERMISSION, rightName));
     }
+  }
+
+  private void checkPermission(String rightName, UUID program, UUID facility, UUID warehouse) {
+    if (!hasPermission(rightName, program, facility, warehouse)) {
+      throw new PermissionMessageException(new Message(ERROR_NO_PERMISSION, rightName));
+    }
+  }
+
+  private Boolean hasPermission(String rightName, UUID program, UUID facility, UUID warehouse) {
+    OAuth2Authentication authentication = (OAuth2Authentication) SecurityContextHolder.getContext()
+        .getAuthentication();
+    if (authentication.isClientOnly()) {
+      return true;
+    }
+    UserDto user = authenticationHelper.getCurrentUser();
+    RightDto right = authenticationHelper.getRight(rightName);
+    ResultDto<Boolean> result = userReferenceDataService.hasRight(
+        user.getId(), right.getId(), program, facility, warehouse
+    );
+    return null != result && result.getResult();
   }
 
   private Boolean hasPermission(String rightName) {

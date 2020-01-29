@@ -26,6 +26,15 @@ public class MessageKeys {
 
   protected static final String NOT_FOUND = "notFound";
 
+  protected static final String REQUISITION_ERROR = "requisition.error";
+  public static final String ERROR_REQUISITION_NOT_FOUND = REQUISITION_ERROR
+      + ".requisitionNotFound";
+  public static final String REQUISITION_STATUS_CHANGE_USER_SYSTEM =
+      REQUISITION_ERROR + ".statusChange.user.system";
+  public static final String REQUISITION_ERROR_IO = REQUISITION_ERROR + ".io";
+  public static final String REQUISITION_ERROR_JASPER_FILE_FORMAT =
+      REQUISITION_ERROR + ".jasper.file.format";
+
   protected static String join(String... params) {
     return String.join(DELIMITER, Arrays.asList(params));
   }

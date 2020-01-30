@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -93,6 +94,10 @@ public class RequisitionDto {
   @Getter
   @Setter
   private List<StatusChangeDto> statusHistory = new ArrayList<>();
+
+  @Getter
+  @Setter
+  private Map<String, Object> extraData;
 
   /**
    * Filter out requisitionLineItems that are skipped and not-full supply.

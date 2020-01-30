@@ -58,6 +58,7 @@ public class RequisitionReportDtoBuilder {
     reportDto.setFullSupplyTotalCost(requisition.getFullSupplyTotalCost());
     reportDto.setNonFullSupplyTotalCost(requisition.getNonFullSupplyTotalCost());
     reportDto.setTotalCost(requisition.getTotalCost());
+    reportDto.setExtraData(requisition.getExtraData());
 
     List<StatusChangeDto> statusChanges = requisition.getStatusHistory();
     if (statusChanges != null) {

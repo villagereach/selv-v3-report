@@ -17,6 +17,7 @@ package org.openlmis.selv.report.dto.requisition;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,4 +44,5 @@ public class RequisitionReportDto {
   private ZonedDateTime submittedDate;
   private UserDto authorizedBy;
   private ZonedDateTime authorizedDate;
+  private Map<String, Object> extraData;
 }

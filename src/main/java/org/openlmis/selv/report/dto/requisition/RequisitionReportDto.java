@@ -32,6 +32,10 @@ import org.openlmis.selv.report.dto.external.requisition.RequisitionLineItemDto;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequisitionReportDto {
+
+  private static final String AVAILABLE_VOLUME = "availableCceCapacity";
+  private static final String ORDER_VOLUME = "orderVolume";
+
   private RequisitionDto requisition;
   private List<RequisitionLineItemDto> fullSupply;
   private List<RequisitionLineItemDto> nonFullSupply;
@@ -45,4 +49,23 @@ public class RequisitionReportDto {
   private UserDto authorizedBy;
   private ZonedDateTime authorizedDate;
   private Map<String, Object> extraData;
+
+  private boolean isOrderVolumeExceedingAvailable() {
+    return getAvailableVolume() < orderVolume();
+  }
+
+  public Double getAvailableVolume() {
+    return getDoubleFromExtraData(AVAILABLE_VOLUME);
+  }
+
+  public Double orderVolume() {
+    return getDoubleFromExtraData(ORDER_VOLUME);
+  }
+
+  private Double getDoubleFromExtraData(String propertyName) {
+    if (extraData != null && extraData.get(propertyName) != null) {
+      return Double.valueOf(extraData.get(propertyName).toString());
+    }
+    return 0d;
+  }
 }

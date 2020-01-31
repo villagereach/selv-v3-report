@@ -17,7 +17,9 @@
 	<import value="java.text.DecimalFormat"/>
 	<import value="java.text.NumberFormat"/>
 	<import value="java.math.BigDecimal"/>
-	<import value="org.openlmis.selv.report.dto.external.*"/>
+	<import value="org.openlmis.selv.report.dto.requisition.*"/>
+	<import value="org.openlmis.selv.report.dto.external.requisition.*"/>
+	<import value="org.openlmis.selv.report.dto.external.referencedata.*"/>
 	<parameter name="template" class="org.openlmis.selv.report.dto.external.requisition.RequisitionTemplateDto" isForPrompting="false">
 		<property name="displayName" value="template"/>
 	</parameter>
@@ -44,7 +46,7 @@
 	<field name="numberOfNewPatientsAdded" class="java.lang.Integer">
 		<fieldDescription><![CDATA[numberOfNewPatientsAdded]]></fieldDescription>
 	</field>
-	<field name="orderable" class="org.openlmis.selv.report.dto.external.OrderableDto">
+	<field name="orderable" class="org.openlmis.selv.report.dto.external.referencedata.OrderableDto">
 		<fieldDescription><![CDATA[orderable]]></fieldDescription>
 	</field>
 	<field name="beginningBalance" class="java.lang.Integer">

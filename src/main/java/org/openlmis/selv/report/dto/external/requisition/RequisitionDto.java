@@ -39,6 +39,10 @@ import org.openlmis.selv.report.dto.external.referencedata.ProgramDto;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequisitionDto {
+
+  private static final String AVAILABLE_VOLUME = "availableCceCapacity";
+  private static final String ORDER_VOLUME = "orderVolume";
+
   @Getter
   @Setter
   private UUID id;
@@ -175,5 +179,23 @@ public class RequisitionDto {
                     reqLineItemDto2) -> reqLineItemDto.getOrderable().getFullProductName()
                       .compareToIgnoreCase(reqLineItemDto2.getOrderable().getFullProductName()));
   }
-  
+
+  private boolean isOrderVolumeExceedingAvailable() {
+    return getAvailableVolume() < orderVolume();
+  }
+
+  public Double getAvailableVolume() {
+    return getDoubleFromExtraData(AVAILABLE_VOLUME);
+  }
+
+  public Double orderVolume() {
+    return getDoubleFromExtraData(ORDER_VOLUME);
+  }
+
+  private Double getDoubleFromExtraData(String propertyName) {
+    if (extraData != null && extraData.get(propertyName) != null) {
+      return Double.valueOf(extraData.get(propertyName).toString());
+    }
+    return 0d;
+  }
 }

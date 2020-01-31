@@ -13,25 +13,40 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.dto.external.referencedata;
+package org.openlmis.selv.report.databuilder.referencedata;
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.openlmis.selv.report.dto.external.referencedata.ProgramDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class ProcessingScheduleDto {
+public class ProgramDtoDataBuilder {
+
+  private static int instanceNumber = 0;
+
   private UUID id;
   private String code;
-  private String description;
-  private ZonedDateTime modifiedDate;
   private String name;
+  private String description;
+  private Boolean active;
+  private Boolean periodsSkippable;
+  private Boolean showNonFullSupplyTab;
+
+  /**
+   * Constructor for setting default values to build {@link ProgramDto}.
+   */
+  public ProgramDtoDataBuilder() {
+    instanceNumber++;
+
+    id = UUID.randomUUID();
+    code = "P" + instanceNumber;
+    name = "Program " + instanceNumber;
+    description = "Program " + instanceNumber;
+    active = true;
+    periodsSkippable = false;
+    showNonFullSupplyTab = true;
+  }
+
+  public ProgramDto build() {
+    return new ProgramDto(
+        id, code, name, description, active, periodsSkippable, showNonFullSupplyTab);
+  }
 }

@@ -13,22 +13,17 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.dto.external.referencedata;
+package org.openlmis.selv.report.databuilder.referencedata;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.openlmis.selv.report.dto.external.referencedata.ProcessingPeriodDto;
+import org.openlmis.selv.report.dto.external.referencedata.ProcessingScheduleDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class ProcessingPeriodDto {
+public class ProcessingPeriodDtoDataBuilder {
+
+  private static int instanceNumber = 0;
+
   private UUID id;
   private ProcessingScheduleDto processingSchedule;
   private String name;
@@ -36,4 +31,24 @@ public class ProcessingPeriodDto {
   private LocalDate startDate;
   private LocalDate endDate;
   private Integer durationInMonths;
+
+  /**
+   * Constructor for setting default values to build {@link ProcessingPeriodDto}.
+   */
+  public ProcessingPeriodDtoDataBuilder() {
+    instanceNumber++;
+
+    id = UUID.randomUUID();
+    processingSchedule = new ProcessingScheduleDtoDataBuilder().build();
+    name = "Processing Period " + instanceNumber;
+    description = "period " + instanceNumber;
+    startDate = LocalDate.of(2019, 1, 1);
+    endDate = LocalDate.of(2019, 1, 31);
+    durationInMonths = 1;
+  }
+
+  public ProcessingPeriodDto build() {
+    return new ProcessingPeriodDto(id, processingSchedule, name, description, startDate, endDate,
+        durationInMonths);
+  }
 }

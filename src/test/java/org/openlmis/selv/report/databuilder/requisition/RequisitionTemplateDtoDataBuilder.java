@@ -13,27 +13,38 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.dto.external.requisition;
+package org.openlmis.selv.report.databuilder.requisition;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.openlmis.selv.report.dto.external.requisition.RequisitionTemplateColumnDto;
+import org.openlmis.selv.report.dto.external.requisition.RequisitionTemplateDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class RequisitionTemplateDto {
+public class RequisitionTemplateDtoDataBuilder {
+
   private UUID id;
   private ZonedDateTime createdDate;
   private ZonedDateTime modifiedDate;
   private UUID programId;
   private Integer numberOfPeriodsToAverage;
   private Map<String, RequisitionTemplateColumnDto> columnsMap;
+
+  /**
+   * Constructor for setting default values to build {@link RequisitionTemplateDto}.
+   */
+  public RequisitionTemplateDtoDataBuilder() {
+    id = UUID.randomUUID();
+    createdDate = ZonedDateTime.now().minusMonths(1);
+    modifiedDate = ZonedDateTime.now().minusMonths(1);
+    programId = UUID.randomUUID();
+    numberOfPeriodsToAverage = 3;
+    columnsMap = new HashMap<>();
+  }
+
+  public RequisitionTemplateDto build() {
+    return new RequisitionTemplateDto(id, createdDate, modifiedDate, programId,
+        numberOfPeriodsToAverage, columnsMap);
+  }
 }

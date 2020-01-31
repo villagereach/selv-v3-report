@@ -13,27 +13,36 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.dto.external.requisition;
+package org.openlmis.selv.report.databuilder.referencedata;
 
-import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.openlmis.selv.report.dto.external.referencedata.GeographicLevelDto;
+import org.openlmis.selv.report.dto.external.referencedata.GeographicZoneDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class RequisitionTemplateDto {
+public class GeographicZoneDtoDataBuilder {
+
+  private static int instanceNumber = 0;
+
   private UUID id;
-  private ZonedDateTime createdDate;
-  private ZonedDateTime modifiedDate;
-  private UUID programId;
-  private Integer numberOfPeriodsToAverage;
-  private Map<String, RequisitionTemplateColumnDto> columnsMap;
+  private String code;
+  private String name;
+  private GeographicLevelDto level;
+  private GeographicZoneDto parent;
+
+  /**
+   * Constructor for setting default values to build {@link GeographicZoneDto}.
+   */
+  public GeographicZoneDtoDataBuilder() {
+    instanceNumber++;
+
+    id = UUID.randomUUID();
+    code = "GZ" + instanceNumber;
+    name = "geo zone " + instanceNumber;
+    level = new GeographicLevelDtoDataBuilder().build();
+    parent = null;
+  }
+
+  public GeographicZoneDto build() {
+    return new GeographicZoneDto(id, code, name, level, parent);
+  }
 }

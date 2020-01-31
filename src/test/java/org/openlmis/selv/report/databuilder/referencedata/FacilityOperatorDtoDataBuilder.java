@@ -13,27 +13,31 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.dto.external.requisition;
+package org.openlmis.selv.report.databuilder.referencedata;
 
-import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.openlmis.selv.report.dto.external.referencedata.FacilityOperatorDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class RequisitionTemplateDto {
+public class FacilityOperatorDtoDataBuilder {
+
+  private static int instanceNumber = 0;
+
   private UUID id;
-  private ZonedDateTime createdDate;
-  private ZonedDateTime modifiedDate;
-  private UUID programId;
-  private Integer numberOfPeriodsToAverage;
-  private Map<String, RequisitionTemplateColumnDto> columnsMap;
+  private String code;
+  private String name;
+
+  /**
+   * Constructor for setting default values to build {@link FacilityOperatorDto}.
+   */
+  public FacilityOperatorDtoDataBuilder() {
+    instanceNumber++;
+
+    id = UUID.randomUUID();
+    code = "FO" + instanceNumber;
+    name = "facility operator " + instanceNumber;
+  }
+
+  public FacilityOperatorDto build() {
+    return new FacilityOperatorDto(id, code, name);
+  }
 }

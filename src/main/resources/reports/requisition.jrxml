@@ -27,10 +27,12 @@
 	<import value="net.sf.jasperreports.engine.design.*"/>
 	<import value="java.math.BigDecimal"/>
 	<import value="org.springframework.context.i18n.*"/>
-	<import value="org.openlmis.selv.report.dto.external.*"/>
 	<import value="java.util.*"/>
 	<import value="java.time.LocalDate"/>
 	<import value="java.time.format.DateTimeFormatter"/>
+	<import value="org.openlmis.selv.report.dto.requisition.*"/>
+	<import value="org.openlmis.selv.report.dto.external.requisition.*"/>
+	<import value="org.openlmis.selv.report.dto.external.referencedata.*"/>
 	<parameter name="template" class="org.openlmis.selv.report.dto.external.requisition.RequisitionTemplateDto" isForPrompting="false">
 		<property name="displayName" value="template"/>
 	</parameter>
@@ -52,7 +54,7 @@
 	<field name="nonFullSupply" class="java.util.List">
 		<fieldDescription><![CDATA[nonFullSupply]]></fieldDescription>
 	</field>
-	<field name="requisition" class="org.openlmis.selv.report.dto.requisition.RequisitionReportDto">
+	<field name="requisition" class="org.openlmis.selv.report.dto.external.requisition.RequisitionDto">
 		<fieldDescription><![CDATA[requisition]]></fieldDescription>
 	</field>
 	<field name="fullSupply" class="java.util.List">

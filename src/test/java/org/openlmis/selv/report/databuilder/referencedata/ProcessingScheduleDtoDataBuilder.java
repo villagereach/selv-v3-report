@@ -13,27 +13,36 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.dto.external.requisition;
+package org.openlmis.selv.report.databuilder.referencedata;
 
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.openlmis.selv.report.dto.external.referencedata.ProcessingScheduleDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-public class RequisitionTemplateDto {
+public class ProcessingScheduleDtoDataBuilder {
+
+  private static int instanceNumber = 0;
+
   private UUID id;
-  private ZonedDateTime createdDate;
+  private String code;
+  private String description;
   private ZonedDateTime modifiedDate;
-  private UUID programId;
-  private Integer numberOfPeriodsToAverage;
-  private Map<String, RequisitionTemplateColumnDto> columnsMap;
+  private String name;
+
+  /**
+   * Constructor for setting default values to build {@link ProcessingScheduleDto}.
+   */
+  public ProcessingScheduleDtoDataBuilder() {
+    instanceNumber++;
+
+    id = UUID.randomUUID();
+    code = "PS" + instanceNumber;
+    description = "processing schedule " + instanceNumber;
+    modifiedDate = ZonedDateTime.now().minusYears(1);
+    name = "Processing Schedule " + instanceNumber;
+  }
+
+  public ProcessingScheduleDto build() {
+    return new ProcessingScheduleDto(id, code, description, modifiedDate, name);
+  }
 }

@@ -241,7 +241,7 @@
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{requisition}.getDoubleFromExtraData()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{requisition}.getOrderVolume()]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

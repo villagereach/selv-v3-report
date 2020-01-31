@@ -180,15 +180,15 @@ public class RequisitionDto {
                       .compareToIgnoreCase(reqLineItemDto2.getOrderable().getFullProductName()));
   }
 
-  private boolean isOrderVolumeExceedingAvailable() {
-    return getAvailableVolume() < orderVolume();
+  public boolean isOrderVolumeExceedingAvailable() {
+    return getAvailableVolume() < getOrderVolume();
   }
 
   public Double getAvailableVolume() {
     return getDoubleFromExtraData(AVAILABLE_VOLUME);
   }
 
-  public Double orderVolume() {
+  public Double getOrderVolume() {
     return getDoubleFromExtraData(ORDER_VOLUME);
   }
 

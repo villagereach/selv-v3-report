@@ -55,7 +55,7 @@ public class RequisitionReportControllerIntegrationTest extends BaseWebIntegrati
         .pathParam("id", id)
         .get(REPORT_URL)
         .then()
-        .statusCode(500);
+        .statusCode(200);
 
     assertThat(RAML_ASSERT_MESSAGE, restAssured.getLastReport(), RamlMatchers.hasNoViolations());
   }

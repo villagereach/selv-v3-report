@@ -99,14 +99,14 @@
 				</graphicElement>
 			</rectangle>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="390" y="45" width="104" height="10" uuid="d7a846a8-1be2-4c95-b8b6-eb97381c5fd7"/>
+				<reportElement x="365" y="45" width="114" height="10" uuid="d7a846a8-1be2-4c95-b8b6-eb97381c5fd7"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format($F{initiatedDate}.toLocalDate())]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="390" y="65" width="104" height="10" uuid="a32b06c8-fec6-4c4e-b229-7e98a0f51657"/>
+				<reportElement x="365" y="65" width="114" height="10" uuid="a32b06c8-fec6-4c4e-b229-7e98a0f51657"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
@@ -114,21 +114,21 @@
            + " - " + DateTimeFormatter.ofPattern($P{dateFormat}).format($F{requisition}.getProcessingPeriod().getEndDate())]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="525" y="45" width="80" height="10" uuid="dc6a243b-b839-45f3-a08d-fe49ee03f8cc"/>
+				<reportElement x="510" y="45" width="80" height="10" uuid="dc6a243b-b839-45f3-a08d-fe49ee03f8cc"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requisition}.getEmergency() ? "Emergency" : "Regular"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="525" y="65" width="80" height="10" uuid="782089a4-e67c-455d-8f34-1218321f5085"/>
+				<reportElement x="510" y="65" width="80" height="10" uuid="782089a4-e67c-455d-8f34-1218321f5085"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requisition}.getStatus().getTranslation()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="214" y="65" width="88" height="10" uuid="0f2769f3-2106-4235-9230-012100b3c3de">
+				<reportElement x="204" y="65" width="76" height="10" uuid="0f2769f3-2106-4235-9230-012100b3c3de">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -137,7 +137,7 @@
 				<textFieldExpression><![CDATA[$F{requisition}.getFacility().getGeographicZone().getName()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="214" y="45" width="88" height="10" uuid="7b42fd08-8189-4b19-8710-aa7571f34137">
+				<reportElement x="204" y="45" width="76" height="10" uuid="7b42fd08-8189-4b19-8710-aa7571f34137">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -146,14 +146,14 @@
 				<textFieldExpression><![CDATA[$F{requisition}.getProgram().getName()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="65" y="45" width="104" height="10" uuid="97807c17-6feb-44db-b0ec-eb1fdb21aa21"/>
+				<reportElement x="65" y="45" width="94" height="10" uuid="97807c17-6feb-44db-b0ec-eb1fdb21aa21"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requisition}.getFacility().getName()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement x="65" y="65" width="104" height="10" uuid="eb29697d-1d2f-42b6-9b25-2e2bcdadc080"/>
+				<reportElement x="65" y="65" width="94" height="10" uuid="eb29697d-1d2f-42b6-9b25-2e2bcdadc080"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="false"/>
 				</textElement>
@@ -178,7 +178,7 @@
 				<text><![CDATA[Código:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="169" y="45" width="45" height="10" uuid="bfb9d50e-e0e4-46cc-aa4a-ea1a0f52b906">
+				<reportElement x="159" y="45" width="45" height="10" uuid="bfb9d50e-e0e4-46cc-aa4a-ea1a0f52b906">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -187,7 +187,7 @@
 				<text><![CDATA[Programa:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="169" y="65" width="45" height="10" uuid="4b3a6dad-2836-4ee3-bc07-2a1da8e16314">
+				<reportElement x="159" y="65" width="45" height="10" uuid="4b3a6dad-2836-4ee3-bc07-2a1da8e16314">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 				<textElement>
@@ -196,7 +196,7 @@
 				<text><![CDATA[Província:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="305" y="45" width="85" height="10" uuid="f01ca8e1-24ca-4e6e-8ae5-148769220580">
+				<reportElement x="280" y="45" width="85" height="10" uuid="f01ca8e1-24ca-4e6e-8ae5-148769220580">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -205,7 +205,7 @@
 				<text><![CDATA[Data de Criação:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="305" y="65" width="85" height="10" uuid="8195bd81-f503-402c-99fd-79861348d2ec">
+				<reportElement x="280" y="65" width="85" height="10" uuid="8195bd81-f503-402c-99fd-79861348d2ec">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -214,7 +214,7 @@
 				<text><![CDATA[Período do Relatório:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="495" y="45" width="30" height="10" uuid="150c310a-e719-4dfa-a6d3-000dd5f634ac">
+				<reportElement x="480" y="45" width="30" height="10" uuid="150c310a-e719-4dfa-a6d3-000dd5f634ac">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 				<textElement>
@@ -223,14 +223,14 @@
 				<text><![CDATA[Tipo:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="495" y="65" width="30" height="10" uuid="5a51fb8c-f965-48ea-9f59-7a04b8ea4688"/>
+				<reportElement x="480" y="65" width="30" height="10" uuid="5a51fb8c-f965-48ea-9f59-7a04b8ea4688"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Estado:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="volume" x="605" y="45" width="155" height="10" uuid="f75a7aef-b698-474e-a5aa-2d5332c6b50f">
+				<reportElement style="volume" x="590" y="45" width="155" height="10" uuid="f75a7aef-b698-474e-a5aa-2d5332c6b50f">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 				<textElement>
@@ -239,14 +239,14 @@
 				<text><![CDATA[Volume disponível na cadeia de frio:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement style="volume" x="760" y="45" width="50" height="10" uuid="332a6330-1f6f-4dcc-a418-a956cf4ecb13"/>
+				<reportElement style="volume" x="745" y="45" width="64" height="10" uuid="332a6330-1f6f-4dcc-a418-a956cf4ecb13"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{requisition}.getAvailableVolume()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{requisition}.getAvailableVolumeMessage()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="volume" x="605" y="65" width="155" height="10" uuid="3dcae04b-3b69-4330-b0c0-4952a388a012">
+				<reportElement style="volume" x="590" y="65" width="155" height="10" uuid="3dcae04b-3b69-4330-b0c0-4952a388a012">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 				<textElement>
@@ -255,11 +255,11 @@
 				<text><![CDATA[Volume da encomenda:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="">
-				<reportElement style="volume" x="760" y="65" width="50" height="10" uuid="2b842be3-28cb-4dc7-accb-6f64bf954571"/>
+				<reportElement style="volume" x="745" y="65" width="64" height="10" uuid="2b842be3-28cb-4dc7-accb-6f64bf954571"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{requisition}.getOrderVolume()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{requisition}.getOrderVolumeMessage()]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

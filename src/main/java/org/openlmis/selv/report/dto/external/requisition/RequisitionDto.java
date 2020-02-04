@@ -184,11 +184,19 @@ public class RequisitionDto {
     return getAvailableVolume() < getOrderVolume();
   }
 
-  public Double getAvailableVolume() {
+  public String getAvailableVolumeMessage() {
+    return getAvailableVolume() + " Litros";
+  }
+
+  public String getOrderVolumeMessage() {
+    return getOrderVolume() + " Litros";
+  }
+
+  private Double getAvailableVolume() {
     return getDoubleFromExtraData(AVAILABLE_VOLUME);
   }
 
-  public Double getOrderVolume() {
+  private Double getOrderVolume() {
     return getDoubleFromExtraData(ORDER_VOLUME);
   }
 

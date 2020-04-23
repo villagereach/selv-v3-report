@@ -1,0 +1,1 @@
+UPDATE report.jasper_templates SET visible = false WHERE id = '7f50dac3-3768-4588-9eeb-f992f5d524fc';

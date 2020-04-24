@@ -11,3 +11,6 @@ node_modules/
 .tx/
 .idea/
 .gradle/
+
+src/main/resources/reports/*.jasper
+src/main/resources/reports/*.jasper.hex

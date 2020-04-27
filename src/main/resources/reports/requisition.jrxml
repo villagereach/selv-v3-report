@@ -89,14 +89,14 @@
 		<band height="90">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="20" y="10" width="800" height="20" uuid="8b895ad8-e565-41e4-87f4-fe70fea7b9f1"/>
+				<reportElement x="10" y="10" width="800" height="20" uuid="8b895ad8-e565-41e4-87f4-fe70fea7b9f1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="14" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[MessageFormat.format("Requisição do programa de {0} {1}", $F{requisition}.getProgram().getName(), $F{requisition}.getFacility().getType().getName())]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement mode="Opaque" x="0" y="40" width="820" height="50" backcolor="#C0C0C0" uuid="65fe1d4d-8334-48d2-b383-ee533c8d5742"/>
+				<reportElement mode="Opaque" x="10" y="40" width="857" height="50" backcolor="#C0C0C0" uuid="65fe1d4d-8334-48d2-b383-ee533c8d5742"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
@@ -269,7 +269,7 @@
 	<detail>
 		<band height="80">
 			<subreport>
-				<reportElement key="fullSupplySubreport" x="0" y="0" width="842" height="38" uuid="4475ef7c-a24a-4301-812c-f41869743f79"/>
+				<reportElement key="fullSupplySubreport" x="0" y="0" width="857" height="38" uuid="4475ef7c-a24a-4301-812c-f41869743f79"/>
 				<subreportParameter name="template">
 					<subreportParameterExpression><![CDATA[$P{template}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -295,7 +295,7 @@
 				<subreportExpression><![CDATA[JasperCompileManager.compileReport($P{subreport})]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="nonFullSupplySubreport" positionType="Float" x="0" y="40" width="842" height="38" uuid="c5a8dc95-8635-4a3c-9fca-38e46ac77ab8">
+				<reportElement key="nonFullSupplySubreport" positionType="Float" x="0" y="40" width="857" height="38" uuid="c5a8dc95-8635-4a3c-9fca-38e46ac77ab8">
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<printWhenExpression><![CDATA[!$F{nonFullSupply}.isEmpty()]]></printWhenExpression>
 				</reportElement>

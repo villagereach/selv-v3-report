@@ -57,11 +57,15 @@ idea {
             xmlFile.asNode().component
                     .find { it.@name == 'CompilerConfiguration' }['annotationProcessing'][0]
                     .replaceNode {
-                annotationProcessing {
-                    profile(default: true, name: 'Default', useClasspath: 'true', enabled: true)
-                }
-            }
+                        annotationProcessing {
+                            profile(default: true, name: 'Default', useClasspath: 'true', enabled: true)
+                        }
+                    }
         }
+    }
+    module {
+        sourceDirs -= file('src/integration-test/java')
+        testSourceDirs += file('src/integration-test/java')
     }
 }
 

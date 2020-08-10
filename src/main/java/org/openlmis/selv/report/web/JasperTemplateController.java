@@ -201,6 +201,7 @@ public class JasperTemplateController extends BaseController {
     map.putAll(jasperTemplateService.mapReportImagesToTemplate(template));
 
     map.put("format", format);
+    map.put("imagesDirectory", "images/");
     map.put("dateTimeFormat", dateTimeFormat);
     map.put("dateFormat", dateFormat);
     map.put("timeZoneId", timeZoneId);

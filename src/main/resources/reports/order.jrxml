@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proofOfDelivery" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="c9b88bba-e685-4f37-89f1-8175e056a730">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" isIgnorePagination="true" uuid="c9b88bba-e685-4f37-89f1-8175e056a730">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<import value="java.time.ZonedDateTime"/>
@@ -25,18 +25,19 @@
 	</parameter>
 	<parameter name="imagesDirectory" class="java.lang.String" isForPrompting="false"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT DISTINCT ON (orderProductName, productname, lotcode)
+		<![CDATA[select distinct ON (productname, lotcode)
   program.name                         AS programName,
   ord.ordercode                        AS orderCode,
   ord.status                           AS orderStatus,
-  ordering_facility.code               AS orderingFacilityCode,
-  ordering_facility.name               AS orderingFacility,
+  receiving_facility.code              AS orderingFacilityCode,
+  receiving_facility.name              AS orderingFacility,
+  requesting_facility.name			   as requestingFacility,
+  facility.name				   as facility,
   ord.createddate                      AS orderDate,
   period.startdate                     AS periodStartDate,
   period.enddate                       AS periodEndDate,
   supplying_facility.name              AS supplyingFacility,
   orderable.fullproductname            AS productName,
-  order_orderable.fullproductname      AS orderProductName,
   COALESCE(NULLIF(Concat_ws(',', size_code.value, route_of_administration.value),
            ''), dispensing_unit.value) AS productUnit,
   order_li.orderedquantity             AS quantityOrdered,
@@ -56,99 +57,52 @@
   shipper.username 					   as shippedBy,
   shipment.shippeddate 				   as shippedDate
 FROM
-  fulfillment.proofs_of_delivery pod
-  JOIN
+  fulfillment.orders ord
+  left JOIN
   fulfillment.shipments shipment
-    ON shipment.id = pod.shipmentid
+    ON shipment.orderid = ord.id 
   left join referencedata.users shipper 
     on shipper.id = shipment.shippedbyid 
-  JOIN
-  fulfillment.orders ord
-    ON ord.id = shipment.orderid
-  JOIN
+  left JOIN
+  	fulfillment.proofs_of_delivery pod
+    ON shipment.id = pod.shipmentid 
+  left JOIN
   referencedata.processing_periods period
     ON period.id = ord.processingperiodid
-  JOIN
+  left JOIN
   referencedata.programs program
     ON program.id = ord.programid
-  JOIN
-  referencedata.facilities ordering_facility
-    ON ordering_facility.id = ord.receivingfacilityid
-  JOIN
+  left JOIN
+  referencedata.facilities facility
+    ON facility.id = ord.facilityid 
+  left JOIN
   referencedata.facilities supplying_facility
     ON supplying_facility.id = ord.supplyingfacilityid
-  JOIN
+  left JOIN
+  referencedata.facilities receiving_facility
+    ON receiving_facility.id = ord.receivingfacilityid
+  left JOIN
+  referencedata.facilities requesting_facility 
+    ON requesting_facility.id = ord.requestingfacilityid 
+  left JOIN
   fulfillment.proof_of_delivery_line_items pod_li
     ON pod_li.proofofdeliveryid = pod.id
-  JOIN
-  referencedata.orderables orderable
-    ON orderable.id = pod_li.orderableid AND orderable.versionnumber = pod_li.orderableversionnumber
-  JOIN
-  referencedata.dispensables dispensable
-    ON dispensable.id = orderable.dispensableid
-  LEFT JOIN referencedata.orderable_identifiers pod_orderable_identifier ON orderable.id = pod_orderable_identifier.orderableid
-                                                       AND (pod_orderable_identifier.key = 'tradeItem' OR pod_orderable_identifier.key = 'commodityType')
   LEFT JOIN
   fulfillment.order_line_items order_li
-    ON order_li.orderid = ord.id AND (pod_li.orderableid = order_li.orderableid AND pod_li.orderableversionnumber = order_li.orderableversionnumber OR order_li.orderableid IN
-    (
-      SELECT
-        o.id
-      FROM
-        referencedata.orderables o
-        LEFT JOIN
-        referencedata.orderable_identifiers order_orderable_identifier
-          ON o.id = order_orderable_identifier.orderableid
-             AND (order_orderable_identifier.key = 'tradeItem' OR order_orderable_identifier.key = 'commodityType')
-        LEFT JOIN
-        referencedata.trade_item_classifications trade_item_classification
-          ON trade_item_classification.tradeitemid = order_orderable_identifier.value::uuid
-        LEFT JOIN
-        referencedata.commodity_types commodity_type
-          ON order_orderable_identifier.value::uuid = commodity_type.id
-             OR (commodity_type.classificationid = trade_item_classification.classificationid AND commodity_type.classificationsystem = trade_item_classification.classificationsystem)
-        LEFT JOIN
-        referencedata.trade_items trade_item
-          ON order_orderable_identifier.value::uuid = trade_item.id
-             OR EXISTS
-             (
-                 SELECT
-                   1
-                 FROM
-                   referencedata.trade_item_classifications trade_item_classification
-                 WHERE
-                   trade_item_classification.tradeitemid = trade_item.id
-                   AND trade_item_classification.classificationid = commodity_type.classificationid
-                   AND trade_item_classification.classificationsystem = commodity_type.classificationsystem
-             )
-      WHERE
-        NOT EXISTS
-        (
-            SELECT
-              1
-            FROM
-              referencedata.dispensable_attributes orderer_dispensable_attribute
-              JOIN
-              referencedata.dispensable_attributes pod_dispensable_attribute
-                ON pod_dispensable_attribute.dispensableid = dispensable.id
-            WHERE
-              orderer_dispensable_attribute.dispensableid = o.dispensableid
-              AND orderer_dispensable_attribute.key = pod_dispensable_attribute.key
-              AND orderer_dispensable_attribute.value <> pod_dispensable_attribute.value
-        )
-        AND (pod_orderable_identifier.value::uuid = trade_item.id OR pod_orderable_identifier.value::uuid = commodity_type.id)
-    ))
+    ON order_li.orderid = ord.id 
+  LEFT JOIN
+  referencedata.orderables orderable
+    ON orderable.id = order_li.orderableid AND orderable.versionnumber = order_li.orderableversionnumber
+  LEFT JOIN referencedata.orderable_identifiers orderable_identifier ON orderable.id = orderable_identifier.orderableid
+                                                       AND (orderable_identifier.key = 'tradeItem' OR orderable_identifier.key = 'commodityType')
   LEFT JOIN
   fulfillment.shipment_line_items shipment_li
     ON shipment_li.shipmentid = shipment.id
-       AND pod_li.orderableid = shipment_li.orderableid
-       AND pod_li.orderableversionnumber = shipment_li.orderableversionnumber
-       AND
-       (
-         (pod_li.lotid IS NULL
-          AND shipment_li.lotid IS NULL)
-         OR pod_li.lotid = shipment_li.lotid
-       )
+       AND order_li.orderableid = shipment_li.orderableid
+       AND order_li.orderableversionnumber = shipment_li.orderableversionnumber
+  left JOIN
+  referencedata.dispensables dispensable
+    ON dispensable.id = orderable.dispensableid
   LEFT JOIN
   referencedata.dispensable_attributes dispensing_unit
     ON dispensing_unit.dispensableid = dispensable.id
@@ -163,24 +117,20 @@ FROM
        AND size_code.key = 'sizeCode'
   LEFT JOIN
   referencedata.lots lot
-    ON pod_li.lotid = lot.id
+    ON shipment_li.lotid = lot.id
   LEFT JOIN
   stockmanagement.stock_card_line_item_reasons rejection_reason
     ON rejection_reason.id = pod_li.rejectionreasonid
   left join 
   referencedata.trade_items ti
-	on ti.id = pod_orderable_identifier.value::uuid
+	on ti.id = orderable_identifier.value::uuid
   LEFT JOIN
   referencedata.program_orderables po 
     ON po.orderableid = orderable.id 
-LEFT JOIN
-  referencedata.orderables order_orderable
-    ON order_orderable.id = order_li.orderableid
-    AND order_orderable.versionnumber = order_li.orderableversionnumber
-WHERE
-  pod.id = $P{orderId}::uuid
+where
+  ord.id = $P{orderId}::uuid
 ORDER BY
-  orderProductName, productName, lotCode DESC]]>
+   productName, lotCode DESC]]>
 	</queryString>
 	<field name="programname" class="java.lang.String"/>
 	<field name="ordercode" class="java.lang.String">
@@ -241,19 +191,20 @@ ORDER BY
 	<field name="receiveddate" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="receiveddate"/>
 	</field>
-	<field name="orderProductName" class="java.lang.String"/>
 	<field name="vvmstatus" class="java.lang.String"/>
 	<field name="manufacture" class="java.lang.String"/>
 	<field name="expirationDate" class="java.lang.String"/>
 	<field name="price" class="java.lang.Integer"/>
 	<field name="shippedBy" class="java.lang.String"/>
 	<field name="shippedDate" class="java.util.Date"/>
+	<field name="facility" class="java.lang.String"/>
+	<field name="requestingFacility" class="java.lang.String"/>
 	<variable name="total" class="java.lang.Integer" calculation="Sum">
 		<variableExpression><![CDATA[$F{price}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<group name="OrderProductGroup">
-		<groupExpression><![CDATA[$F{orderProductName}]]></groupExpression>
+		<groupExpression><![CDATA[$F{productname}]]></groupExpression>
 		<groupHeader>
 			<band height="25">
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -269,7 +220,7 @@ ORDER BY
 						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 					</box>
 					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{orderProductName}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{productname}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="60" y="0" width="70" height="20" backcolor="#F0F0F0" uuid="4ad70c86-5691-4163-9574-37f4124787dc">
@@ -419,12 +370,12 @@ ORDER BY
 				<reportElement x="375" y="0" width="50" height="50" uuid="0af03c34-f543-4b25-bce2-ab20a7ff61c5"/>
 				<imageExpression><![CDATA[getClass().getResourceAsStream($P{imagesDirectory} + "selv.png")]]></imageExpression>
 			</image>
-			<textField>
-				<reportElement x="0" y="135" width="310" height="20" uuid="e684467b-4291-445d-ba9c-0a6784ba78e8"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="135" width="230" height="20" uuid="e684467b-4291-445d-ba9c-0a6784ba78e8"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["De: "+ $F{orderingfacility}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{supplyingfacility}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="630" y="155" width="168" height="20" forecolor="#FA0400" uuid="7ed25074-ec4d-494a-b4c8-e6f238a69bed"/>
@@ -454,13 +405,27 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				</textElement>
 				<text><![CDATA[Comprovativo de Entrega Nº]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="0" y="155" width="310" height="20" uuid="b7d64a85-81b4-4b7d-9001-6fd16a9b8e51"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="155" width="230" height="20" uuid="b7d64a85-81b4-4b7d-9001-6fd16a9b8e51"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Para: "+ $F{supplyingfacility}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{orderingfacility}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="0" y="135" width="40" height="20" uuid="984330f8-5aa0-45a5-98de-2add51dc1bba"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[De: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="155" width="40" height="20" uuid="9c5c11ab-2a3f-4884-9c51-6d39b8406226"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Para:]]></text>
+			</staticText>
 		</band>
 	</title>
 	<columnHeader>
@@ -685,6 +650,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{quantityaccepted} != null ? $P{decimalFormat}.format($F{quantityaccepted}).toString() : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="350" y="0" width="70" height="20" uuid="a313b3f1-4386-4e49-bc65-cf3e9cc4f4b2">
@@ -774,7 +740,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
 				<reportElement x="0" y="0" width="800" height="15" uuid="a323ca77-450c-4d38-ac6e-c224fd1f69fc"/>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="480" y="0" width="64" height="15" uuid="85fa72fd-c224-45dd-a62f-43b602bd0994"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none"/>
 					<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
@@ -862,7 +828,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="10" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Embalado Por:]]></text>
+					<text><![CDATA[Entregue Por]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="622" y="20" width="175" height="15" uuid="1366902c-19b7-4c25-a4f4-d8de5c96cd23">
@@ -909,8 +875,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{orderdate}.toString()))
-]]></textFieldExpression>
+					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{orderdate}.toString()))]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="380" y="54" width="176" height="15" uuid="d51dcf0f-622f-4702-a0c7-1637749bfe98">
@@ -959,8 +924,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{shippedDate}.toString()))
-]]></textFieldExpression>
+					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{shippedDate}.toString()))]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="20" y="39" width="100" height="15" uuid="2a94a39c-ea20-4157-a43b-b6de78a8374a">

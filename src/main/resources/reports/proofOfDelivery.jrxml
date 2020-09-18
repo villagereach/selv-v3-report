@@ -420,13 +420,6 @@ ORDER BY
 				<imageExpression><![CDATA[getClass().getResourceAsStream($P{imagesDirectory} + "selv.png")]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="0" y="135" width="520" height="20" uuid="e684467b-4291-445d-ba9c-0a6784ba78e8"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA["De: " + $F{orderingfacility}]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="630" y="155" width="168" height="20" forecolor="#FA0400" uuid="7ed25074-ec4d-494a-b4c8-e6f238a69bed"/>
 				<textElement textAlignment="Right">
 					<font size="14" isBold="true"/>
@@ -454,12 +447,33 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				</textElement>
 				<text><![CDATA[Comprovativo de Entrega Nº]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="0" y="155" width="310" height="20" uuid="b7d64a85-81b4-4b7d-9001-6fd16a9b8e51"/>
+			<staticText>
+				<reportElement x="0" y="135" width="40" height="20" uuid="5877fcb7-f3fb-453b-a69e-70374ef7f943"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Para: "+ $F{supplyingfacility}]]></textFieldExpression>
+				<text><![CDATA[De: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="155" width="40" height="20" uuid="03f5f245-4293-46c2-9ede-b8ca4504609d"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Para:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="155" width="230" height="20" uuid="7f1c78ee-913a-4eab-aff2-7e100c2c4f61"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{orderingfacility}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="135" width="230" height="20" uuid="8b7f919b-77a7-4126-8092-2136269295c7"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplyingfacility}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -657,7 +671,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle" markup="html"/>
-				<textFieldExpression><![CDATA[($F{rejectionreason}!=null?$F{rejectionreason}:"")+(($F{notes}!=null)?"<br> ("+$F{notes}+")":"") ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{rejectionreason}!=null?$F{rejectionreason}:"")+(($F{notes}!=null)?"<br> ("+$F{notes}+")":"")]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="620" y="0" width="80" height="20" uuid="31bd7674-5efc-40cb-b704-910398e5a53a">
@@ -863,7 +877,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="10" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Embalado Por:]]></text>
+					<text><![CDATA[Entregue Por:]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="622" y="20" width="175" height="15" uuid="abbb3ad3-feb4-4711-9639-bb7c0da6b096">
@@ -910,8 +924,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{orderdate}.toString()))
-]]></textFieldExpression>
+					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{orderdate}.toString()))]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="380" y="54" width="176" height="15" uuid="94d15862-f129-466c-83e0-444b7d62d100">
@@ -960,8 +973,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{shippedDate}.toString()))
-]]></textFieldExpression>
+					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{shippedDate}.toString()))]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="20" y="39" width="100" height="15" uuid="a1d3208a-68f4-4349-bfc9-62b18451d5ea">

@@ -699,7 +699,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{quantityreturned} != null ? $P{decimalFormat}.format($F{quantityreturned}).toString() : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{quantityaccepted} != null ? $P{decimalFormat}.format($F{quantityaccepted}).toString() : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="350" y="0" width="70" height="20" uuid="a313b3f1-4386-4e49-bc65-cf3e9cc4f4b2">

@@ -59,9 +59,7 @@
 	<parameter name="dateFormat" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="dateTimeFormat" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="timeZoneId" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="decimalFormat" class="java.text.DecimalFormat" isForPrompting="false">
-		<property name="displayName" value="DecimalFormat"/>
-	</parameter>
+	<parameter name="decimalFormat" class="java.text.DecimalFormat" isForPrompting="false"/>
 	<parameter name="imagesDirectory" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="physicalInventoryLineItemId" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$F{physicalInventoryLineItemId}]]></defaultValueExpression>
@@ -169,7 +167,7 @@
 						<font size="9" isBold="true"/>
 						<paragraph lineSpacingSize="23.0" leftIndent="7"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$P{decimalFormat}.format($V{sumQuantity}).toString()]]></textFieldExpression>
+					<textFieldExpression><![CDATA[ $P{decimalFormat}.format($V{sumQuantity}).toString() ]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="ElementGroupBottom" mode="Opaque" x="0" y="33" width="83" height="18" backcolor="#FFFFFF" uuid="e979f77b-e0af-4a98-9db3-1c8da27243c8">
@@ -420,7 +418,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textElement textAlignment="Right">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{decimalFormat}.format($F{soh}).toString()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{soh} != null ? $P{decimalFormat}.format($F{soh}).toString() : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="278" y="0" width="63" height="18" uuid="1486a3be-88e3-4beb-9332-7c818cde5f3c"/>
@@ -433,7 +431,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textElement textAlignment="Right">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{decimalFormat}.format($F{quantity}).toString()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{quantity} != null ?$P{decimalFormat}.format($F{quantity}).toString() : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="341" y="0" width="62" height="18" uuid="c894bb7f-ecb3-403c-ab53-363ac11be055"/>

@@ -19,7 +19,7 @@ one](https://raw.githubusercontent.com/OpenLMIS/openlmis-ref-distro/master/setti
  cd openlmis-report
  curl -o .env -L https://raw.githubusercontent.com/OpenLMIS/openlmis-ref-distro/master/settings-sample.env
  ```
-3. Develop w/ Docker by running `docker-compose run --service-ports report`.
+3. Develop w/ Docker by running `docker-compose run --service-ports selv-v3-report`.
 See [Developing w/ Docker](#devdocker). You should now be in an interactive shell inside
 the newly created development environment.
 4. Run `gradle build` to build. After the build steps finish, you should see 'Build Successful'.

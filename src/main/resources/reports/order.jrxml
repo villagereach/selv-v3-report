@@ -40,12 +40,16 @@
   orderable.fullproductname            AS productName,
   COALESCE(NULLIF(Concat_ws(',', size_code.value, route_of_administration.value),
            ''), dispensing_unit.value) AS productUnit,
-  order_li.orderedquantity             AS quantityOrdered,
-  shipment_li.quantityshipped          AS quantityShipped,
+  (order_li.orderedquantity*orderable.netcontent)
+  									   AS quantityOrdered,
+  (shipment_li.quantityshipped*orderable.netcontent)
+  									   AS quantityShipped,
   lot.lotcode                          AS lotCode,
-  pod_li.quantityaccepted              AS quantityAccepted,
+  (pod_li.quantityaccepted*orderable.netcontent)
+  									   AS quantityAccepted,
   pod_li.vvmstatus                     AS vvmStatus,
-  pod_li.quantityrejected              AS quantityReturned,
+  (pod_li.quantityrejected*orderable.netcontent)
+  									   AS quantityReturned,
   rejection_reason.name                AS rejectionReason,
   pod_li.notes                         AS notes,
   pod.deliveredby                      AS deliveredBy,
@@ -130,6 +134,7 @@ FROM
     ON po.orderableid = orderable.id 
 where
   ord.id = $P{orderId}::uuid
+  and (order_li.orderedquantity != 0 and shipment_li.quantityshipped != 0)
 ORDER BY
    productName, lotCode DESC]]>
 	</queryString>
@@ -189,12 +194,12 @@ ORDER BY
 	<field name="receivedby" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="receivedby"/>
 	</field>
-	<field name="receiveddate" class="java.lang.String">
+	<field name="receiveddate" class="java.util.Date">
 		<property name="com.jaspersoft.studio.field.label" value="receiveddate"/>
 	</field>
 	<field name="vvmstatus" class="java.lang.String"/>
 	<field name="manufacture" class="java.lang.String"/>
-	<field name="expirationDate" class="java.lang.String"/>
+	<field name="expirationDate" class="java.util.Date"/>
 	<field name="price" class="java.lang.Integer"/>
 	<field name="shippedBy" class="java.lang.String"/>
 	<field name="shippedDate" class="java.util.Date"/>
@@ -235,7 +240,7 @@ ORDER BY
 						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 					</box>
 					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{quantityordered} != null ? $P{decimalFormat}.format($F{quantityordered}).toString() : ""]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{quantityordered} != null ? $F{quantityordered} : ""]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="620" y="0" width="80" height="20" backcolor="#F0F0F0" uuid="fee7ae94-a0b2-4ffe-84d0-9624f2b76451">
@@ -607,7 +612,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{quantityshipped} != null ? $P{decimalFormat}.format($F{quantityshipped}).toString() : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{quantityshipped} != null ? $F{quantityshipped} : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="700" y="0" width="100" height="20" uuid="3d74a886-184c-4912-9be8-d505876fe76c">
@@ -624,7 +629,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textElement verticalAlignment="Middle" markup="html"/>
 				<textFieldExpression><![CDATA[($F{rejectionreason}!=null?$F{rejectionreason}:"")+(($F{notes}!=null)?"<br> ("+$F{notes}+")":"")]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="620" y="0" width="80" height="20" uuid="31bd7674-5efc-40cb-b704-910398e5a53a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -636,7 +641,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{expirationDate}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expirationDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="200" y="0" width="70" height="20" uuid="e2085931-c16a-4880-b6ff-eedbb1301cf0">
@@ -650,7 +655,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{quantityaccepted} != null ? $P{decimalFormat}.format($F{quantityaccepted}).toString() : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{quantityaccepted} != null ? $F{quantityaccepted} : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="350" y="0" width="70" height="20" uuid="a313b3f1-4386-4e49-bc65-cf3e9cc4f4b2">
@@ -860,7 +865,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</textElement>
 					<text><![CDATA[Data e Hora :]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="620" y="54" width="176" height="15" uuid="c0cb4873-8408-4c04-b3bf-29e63cedaf8c">
 						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
@@ -875,9 +880,9 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{orderdate}.toString()))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{orderdate}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="380" y="54" width="176" height="15" uuid="d51dcf0f-622f-4702-a0c7-1637749bfe98">
 						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
@@ -892,7 +897,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{receiveddate}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{receiveddate}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="380" y="39" width="100" height="15" uuid="9f47b5ba-9385-4321-a2ed-cb254e16fc80">
@@ -909,7 +914,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</textElement>
 					<text><![CDATA[Data e Hora :]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
 					<reportElement key="" stretchType="RelativeToTallestObject" x="20" y="54" width="176" height="15" uuid="d921b235-58ff-4491-ae6f-3225fd76e94d">
 						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
@@ -924,7 +929,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
 					</textElement>
-					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{shippedDate}.toString()))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{shippedDate}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="20" y="39" width="100" height="15" uuid="2a94a39c-ea20-4157-a43b-b6de78a8374a">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" isIgnorePagination="true" uuid="c9b88bba-e685-4f37-89f1-8175e056a730">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="TEST SELV"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<import value="java.time.ZonedDateTime"/>
 	<import value="java.time.LocalDate"/>
@@ -394,22 +394,22 @@ ORDER BY
 			<staticText>
 				<reportElement x="256" y="60" width="286" height="40" uuid="d0d4af29-5d4d-44a9-96c9-b41ffcc5fdbc"/>
 				<textElement textAlignment="Center"/>
-				<text><![CDATA[REPĆBLICA DE MOĆ‡AMBIQUE
-DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
+				<text><![CDATA[REPÚBLICA DE MOÇAMBIQUE
+DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="256" y="100" width="285" height="20" uuid="3fe2dd37-0fd5-47b3-8a81-6b623fe7cd98"/>
 				<textElement textAlignment="Center">
 					<font size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Programa Alargado De VacinaĆ§Ć£o]]></text>
+				<text><![CDATA[Programa Alargado De Vacinação]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="556" y="137" width="244" height="18" uuid="6774184f-9269-408c-94b5-48ff1681e1d0"/>
 				<textElement textAlignment="Right">
 					<font size="14" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Comprovativo de Entrega NĀŗ]]></text>
+				<text><![CDATA[Comprovativo de Entrega Nº]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="40" y="155" width="230" height="20" uuid="b7d64a85-81b4-4b7d-9001-6fd16a9b8e51"/>
@@ -590,7 +590,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="270" y="0" width="80" height="20" isRemoveLineWhenBlank="true" uuid="59068d4e-5e09-4316-ac21-ca8af3968af1">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -605,7 +605,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="130" y="0" width="70" height="20" isRemoveLineWhenBlank="true" uuid="03b293b8-2dd4-4a9c-9f15-fc4c01005f47">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -621,7 +621,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 				<reportElement x="700" y="0" width="100" height="20" isRemoveLineWhenBlank="true" uuid="3d74a886-184c-4912-9be8-d505876fe76c">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -636,7 +636,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
 				<reportElement x="620" y="0" width="80" height="20" isRemoveLineWhenBlank="true" uuid="31bd7674-5efc-40cb-b704-910398e5a53a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -651,7 +651,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="200" y="0" width="70" height="20" isRemoveLineWhenBlank="true" uuid="e2085931-c16a-4880-b6ff-eedbb1301cf0">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -666,7 +666,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="350" y="0" width="70" height="20" isRemoveLineWhenBlank="true" uuid="a313b3f1-4386-4e49-bc65-cf3e9cc4f4b2">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -681,7 +681,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="60" y="0" width="70" height="20" isRemoveLineWhenBlank="true" uuid="12c21d58-5a3e-4b22-be39-ae601e5baece">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -695,7 +695,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="60" height="20" isRemoveLineWhenBlank="true" uuid="5a2228d0-0ed3-4cd8-b98d-4e2c8d3a0058">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -709,7 +709,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="545" y="0" width="74" height="20" isRemoveLineWhenBlank="true" backcolor="#FFFFFF" uuid="7ebc9567-9dd6-442c-8a16-5e24e6949750">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -724,7 +724,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="420" y="0" width="60" height="20" isRemoveLineWhenBlank="true" backcolor="#FFFFFF" uuid="9950b1da-3453-42c0-81a7-087b68beff4e">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>
@@ -739,7 +739,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="480" y="0" width="64" height="20" isRemoveLineWhenBlank="true" backcolor="#FFFFFF" uuid="95531a59-2649-41f2-b04d-3934502f7406">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[OR($F{quantityshipped} != null,$F{quantityaccepted} != null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="4" bottomPadding="2">
 					<pen lineColor="#DDDDDD"/>

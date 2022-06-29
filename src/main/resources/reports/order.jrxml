@@ -134,8 +134,7 @@ FROM
     ON po.orderableid = orderable.id
 where
   ord.id = $P{orderId}::uuid
-  and ((order_li.orderedquantity != 0 and shipment_li.quantityshipped != 0)
-  or (order_li.orderedquantity != 0 and shipment.shippeddate isnull))
+  and (order_li.orderedquantity > 0 or shipment_li.quantityshipped > 0)
 ORDER BY
    productName, lotCode DESC]]>
 	</queryString>
@@ -587,7 +586,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 	<detail>
 		<band height="25" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA[$F{quantityshipped} != null || $F{quantityaccepted} != null]]></printWhenExpression>
+			<printWhenExpression><![CDATA[($F{quantityshipped} != null && $F{quantityshipped} != 0) || ($F{quantityaccepted} != null && $F{quantityaccepted} != 0)]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="270" y="0" width="80" height="20" uuid="59068d4e-5e09-4316-ac21-ca8af3968af1">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>

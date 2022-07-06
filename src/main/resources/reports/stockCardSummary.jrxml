@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StockCardSummary" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40" isSummaryWithPageHeaderAndFooter="true" whenResourceMissingType="Error" uuid="d0829c7a-bf73-4e6e-9b5a-1735ab6c4d7d">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SELV UAT DB"/>
 	<import value="org.openlmis.stockmanagement.domain.card.*"/>
 	<import value="org.openlmis.stockmanagement.dto.*"/>
 	<import value="java.time.LocalDate"/>
@@ -78,47 +78,48 @@
 	<parameter name="decimalFormat" class="java.text.DecimalFormat" isForPrompting="false"/>
 	<parameter name="imagesDirectory" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
-		<![CDATA[select 
-   f.name as facilityName,
-   p.name as programName,
-   province.name as provinceName,
-   o.fullproductname as productName,
-   l.lotcode as lotCode,
-   l.expirationdate as expirationDate,
-   csoh.stockonhand as stockOnHand,
-   scli.extraData->>'vvmStatus' AS vvmStatus,
-   se.processeddate as modifiedDate
-FROM
-  stockmanagement.stock_cards sc 
-  LEFT JOIN
-	stockmanagement.calculated_stocks_on_hand csoh ON csoh.stockcardid = sc.id AND csoh.occurreddate = (
-	    SELECT MAX(temp_csoh.occurreddate)
-	    FROM stockmanagement.calculated_stocks_on_hand AS temp_csoh
-	    WHERE temp_csoh.stockcardid = csoh.stockcardid
-  	)
-  LEFT JOIN
-  stockmanagement.stock_events se
-    ON se.id = sc.origineventid
-  LEFT JOIN
-  stockmanagement.stock_card_line_items scli
-    ON scli.stockcardid = sc.id and scli.origineventid = se.id 
-  LEFT JOIN
-  referencedata.facilities f
-    ON f.id = sc.facilityid 
-  LEFT JOIN
-  referencedata.programs p
-    ON p.id = sc.programid 
-  LEFT join
-  referencedata.geographic_zones province on province.id = f.geographiczoneid
-  LEFT JOIN
-  referencedata.orderables o
-    ON o.id = sc.orderableid and o.versionnumber in (select MAX(o2.versionnumber) from referencedata.orderables o2 where o2.id = o.id) 
-  LEFT JOIN
-  referencedata.lots l
-    ON l.id = sc.lotid
+		<![CDATA[select f.name                         as facilityName,
+       p.name                         as programName,
+       province.name                  as provinceName,
+       o.fullproductname              as productName,
+       l.lotcode                      as lotCode,
+       l.expirationdate               as expirationDate,
+       csoh.stockonhand               as stockOnHand,
+       scli.extraData ->> 'vvmStatus' AS vvmStatus,
+       se.processeddate               as modifiedDate
+FROM stockmanagement.stock_cards sc
+         LEFT JOIN
+     stockmanagement.calculated_stocks_on_hand csoh ON csoh.stockcardid = sc.id AND csoh.occurreddate = (
+         SELECT MAX(temp_csoh.occurreddate)
+         FROM stockmanagement.calculated_stocks_on_hand AS temp_csoh
+         WHERE temp_csoh.stockcardid = csoh.stockcardid
+     )
+         LEFT JOIN
+     stockmanagement.stock_events se
+     ON se.id = sc.origineventid
+         LEFT JOIN
+     stockmanagement.stock_card_line_items scli
+     ON scli.stockcardid = sc.id and scli.origineventid = se.id
+         LEFT JOIN
+     referencedata.facilities f
+     ON f.id = sc.facilityid
+         LEFT JOIN
+     referencedata.programs p
+     ON p.id = sc.programid
+         LEFT join
+     referencedata.geographic_zones province on province.id = f.geographiczoneid
+         LEFT JOIN
+     referencedata.orderables o
+     ON o.id = sc.orderableid and
+        o.versionnumber in (select MAX(o2.versionnumber) from referencedata.orderables o2 where o2.id = o.id)
+         LEFT JOIN
+     referencedata.lots l
+     ON l.id = sc.lotid
 WHERE sc.programid = $P{programId}::uuid
   and sc.facilityid = $P{facilityId}::uuid
-  order by productName]]>
+ 
+group by f.name, p.name, province.name, o.fullproductname, l.lotcode, l.expirationdate, csoh.stockonhand, scli.extraData ->> 'vvmStatus', se.processeddate
+order by productName]]>
 	</queryString>
 	<field name="facilityName" class="java.lang.String"/>
 	<field name="programName" class="java.lang.String"/>
@@ -170,7 +171,8 @@ WHERE sc.programid = $P{programId}::uuid
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<paragraph rightIndent="5"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$P{decimalFormat}.format($V{TotalStockOnHand}).toString()]]></textFieldExpression>
+					<textFieldExpression><![CDATA[
+$V{TotalStockOnHand} != null ? String.format("%,d",$V{TotalStockOnHand}): ""]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement style="Table_TH" mode="Opaque" x="343" y="0" width="90" height="20" backcolor="#F0F0F0" uuid="e6332853-b8f1-443f-80e4-134885146435"/>
@@ -207,16 +209,16 @@ WHERE sc.programid = $P{programId}::uuid
 			<staticText>
 				<reportElement x="118" y="64" width="286" height="40" uuid="69a455bf-aff3-4c24-824e-e45a9d1220ad"/>
 				<textElement textAlignment="Center"/>
-				<text><![CDATA[REPÚBLICA DE MOÇAMBIQUE
+				<text><![CDATA[REPĆBLICA DE MOĆ‡AMBIQUE
 
-DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
+DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="118" y="104" width="286" height="20" uuid="85ab77bd-9365-4d87-a39f-837cc421d372"/>
 				<textElement textAlignment="Center">
 					<font size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Programa Alargado De Vacinação]]></text>
+				<text><![CDATA[Programa Alargado De VacinaĆ§Ć£o]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="64" y="124" width="400" height="17" uuid="696f7abd-d82b-48ca-b26b-7ab32bc5e675"/>
@@ -352,7 +354,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<pen lineWidth="1.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html"/>
-				<text><![CDATA[Data de Expiração]]></text>
+				<text><![CDATA[Data de ExpiraĆ§Ć£o]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="271" y="0" width="72" height="30" uuid="43028933-0246-4c4b-bd67-ff25a3829b19"/>
@@ -360,7 +362,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<pen lineWidth="1.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html"/>
-				<text><![CDATA[Stock Físico]]></text>
+				<text><![CDATA[Stock FĆ­sico]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="343" y="0" width="90" height="30" uuid="9b73fcc8-667e-43f1-9c5a-bf0ccb43e194"/>
@@ -381,41 +383,43 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20">
-			<textField>
-				<reportElement x="117" y="0" width="80" height="20" uuid="2403af66-70d3-476b-8d06-558165ce00ed"/>
+		<band height="30">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+				<reportElement stretchType="ElementGroupHeight" x="117" y="0" width="80" height="30" uuid="2403af66-70d3-476b-8d06-558165ce00ed"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{lotCode}!=null?$F{lotCode}:""]]></textFieldExpression>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lotCode}!=null?$F{lotCode}:"Nenhum lote definido"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="197" y="0" width="74" height="20" uuid="d43f4225-5902-4f7a-9ea7-87a1ecad4962"/>
+				<reportElement x="197" y="0" width="74" height="30" uuid="d43f4225-5902-4f7a-9ea7-87a1ecad4962"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{expirationDate}!=null?DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{expirationDate}.toString())):""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expirationDate}!=null?java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format(java.time.LocalDate.parse($F{expirationDate}.toString())):""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="343" y="0" width="90" height="20" uuid="3e37b1e2-c12a-40a7-be87-2344a11b3fff"/>
+				<reportElement x="343" y="0" width="90" height="30" uuid="3e37b1e2-c12a-40a7-be87-2344a11b3fff"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{vvmStatus} != null?$F{vvmStatus}:""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vvmStatus} != null?$F{vvmStatus}.toString():""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="433" y="0" width="82" height="20" uuid="3aa62e95-ac9a-4f9c-9407-42912ebfc9d1"/>
+				<reportElement x="433" y="0" width="82" height="30" uuid="3aa62e95-ac9a-4f9c-9407-42912ebfc9d1"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{modifiedDate}.toString()))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.parse($F{modifiedDate}.toString()))]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="0" width="116" height="20" uuid="91e8bb3d-7397-4bf3-92e2-4b1cc0259a43"/>
+				<reportElement x="1" y="0" width="116" height="30" uuid="91e8bb3d-7397-4bf3-92e2-4b1cc0259a43"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -424,14 +428,14 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				</textElement>
 			</textField>
 			<textField>
-				<reportElement x="271" y="0" width="72" height="20" uuid="a3c80322-6dd9-44e0-acd5-32c27530219a"/>
+				<reportElement x="271" y="0" width="72" height="30" uuid="a3c80322-6dd9-44e0-acd5-32c27530219a"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{stockOnHand} != null ? $P{decimalFormat}.format($F{stockOnHand}).toString() : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{stockOnHand} != null ? String.format("%,d",$F{stockOnHand}): ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

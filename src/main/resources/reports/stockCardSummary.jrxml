@@ -117,7 +117,6 @@ FROM stockmanagement.stock_cards sc
      ON l.id = sc.lotid
 WHERE sc.programid = $P{programId}::uuid
   and sc.facilityid = $P{facilityId}::uuid
- 
 group by f.name, p.name, province.name, o.fullproductname, l.lotcode, l.expirationdate, csoh.stockonhand, scli.extraData ->> 'vvmStatus', se.processeddate
 order by productName]]>
 	</queryString>
@@ -209,7 +208,7 @@ $V{TotalStockOnHand} != null ? String.format("%,d",$V{TotalStockOnHand}): ""]]><
 			<staticText>
 				<reportElement x="118" y="64" width="286" height="40" uuid="69a455bf-aff3-4c24-824e-e45a9d1220ad"/>
 				<textElement textAlignment="Center"/>
-				<text><![CDATA[REPĆBLICA DE MOĆ‡AMBIQUE
+				<text><![CDATA[REPÚBLICA DE MOÇAMBIQUE
 
 DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 			</staticText>

@@ -170,8 +170,7 @@ order by productName]]>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<paragraph rightIndent="5"/>
 					</textElement>
-					<textFieldExpression><![CDATA[
-$V{TotalStockOnHand} != null ? String.format("%,d",$V{TotalStockOnHand}): ""]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{TotalStockOnHand} != null ? String.format("%,d",$V{TotalStockOnHand}): ""]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement style="Table_TH" mode="Opaque" x="343" y="0" width="90" height="20" backcolor="#F0F0F0" uuid="e6332853-b8f1-443f-80e4-134885146435"/>
@@ -209,15 +208,14 @@ $V{TotalStockOnHand} != null ? String.format("%,d",$V{TotalStockOnHand}): ""]]><
 				<reportElement x="118" y="64" width="286" height="40" uuid="69a455bf-aff3-4c24-824e-e45a9d1220ad"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[REPÚBLICA DE MOÇAMBIQUE
-
-DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
+DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="118" y="104" width="286" height="20" uuid="85ab77bd-9365-4d87-a39f-837cc421d372"/>
 				<textElement textAlignment="Center">
 					<font size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Programa Alargado De VacinaĆ§Ć£o]]></text>
+				<text><![CDATA[Programa Alargado De Vacinação]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="64" y="124" width="400" height="17" uuid="696f7abd-d82b-48ca-b26b-7ab32bc5e675"/>
@@ -353,7 +351,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 					<pen lineWidth="1.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html"/>
-				<text><![CDATA[Data de ExpiraĆ§Ć£o]]></text>
+				<text><![CDATA[Data de Expiração]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="271" y="0" width="72" height="30" uuid="43028933-0246-4c4b-bd67-ff25a3829b19"/>
@@ -361,7 +359,7 @@ DIRECĆ‡ĆO NACIONAL DE SAĆDE PĆBLICA]]></text>
 					<pen lineWidth="1.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html"/>
-				<text><![CDATA[Stock FĆ­sico]]></text>
+				<text><![CDATA[Stock Físico]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="343" y="0" width="90" height="30" uuid="9b73fcc8-667e-43f1-9c5a-bf0ccb43e194"/>

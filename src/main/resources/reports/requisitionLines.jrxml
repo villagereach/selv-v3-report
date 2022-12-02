@@ -723,7 +723,7 @@
 				<textElement>
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($P{template}.getColumnsMap().get("remarks").getIsDisplayed() && !($P{requisitionStatus} == org.openlmis.selv.report.dto.external.requisition.RequisitionStatusDto.INITIATED || $P{requisitionStatus} == org.openlmis.selv.report.dto.external.RequisitionStatusDto.SUBMITTED)) ? $F{remarks} : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($P{template}.getColumnsMap().get("remarks").getIsDisplayed() && !($P{requisitionStatus} == org.openlmis.selv.report.dto.external.requisition.RequisitionStatusDto.INITIATED || $P{requisitionStatus} == org.openlmis.selv.report.dto.external.requisition.RequisitionStatusDto.SUBMITTED)) ? $F{remarks} : ""]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="adjustedConsumption" x="719" y="0" width="40" height="20" uuid="2a43948d-6150-4c4f-ba77-2ad782def76b">

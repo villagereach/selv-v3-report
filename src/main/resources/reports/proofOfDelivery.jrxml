@@ -32,8 +32,6 @@
   ordering_facility.code               AS orderingFacilityCode,
   ordering_facility.name               AS orderingFacility,
   ord.createddate                      AS orderDate,
-  period.startdate                     AS periodStartDate,
-  period.enddate                       AS periodEndDate,
   supplying_facility.name              AS supplyingFacility,
   orderable.fullproductname            AS productName,
   order_orderable.fullproductname      AS orderProductName,
@@ -65,9 +63,6 @@ FROM
   JOIN
   fulfillment.orders ord
     ON ord.id = shipment.orderid
-  JOIN
-  referencedata.processing_periods period
-    ON period.id = ord.processingperiodid
   JOIN
   referencedata.programs program
     ON program.id = ord.programid
@@ -198,12 +193,6 @@ ORDER BY
 	</field>
 	<field name="shippedBy" class="java.lang.String"/>
 	<field name="shippedDate" class="java.util.Date"/>
-	<field name="periodstartdate" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.label" value="periodstartdate"/>
-	</field>
-	<field name="periodenddate" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.label" value="periodenddate"/>
-	</field>
 	<field name="supplyingfacility" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="supplyingfacility"/>
 	</field>

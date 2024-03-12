@@ -95,6 +95,11 @@ public class JasperTemplate extends BaseEntity {
   @Setter
   private Boolean visible;
 
+  @Column
+  @Getter
+  @Setter
+  private String category;
+
   /**
    * Export this object to the specified exporter (DTO).
    *
@@ -106,6 +111,7 @@ public class JasperTemplate extends BaseEntity {
     exporter.setId(id);
     exporter.setName(name);
     exporter.setType(type);
+    exporter.setCategory(category);
   }
 
   @PrePersist
@@ -132,5 +138,7 @@ public class JasperTemplate extends BaseEntity {
     void setDescription(String description);
 
     void setRequiredRights(List<String> rights);
+
+    void setCategory(String category);
   }
 }

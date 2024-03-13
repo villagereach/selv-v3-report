@@ -59,6 +59,10 @@ public class JasperTemplateDto implements Exporter {
   @Setter
   private List<JasperTemplateParameter.Exporter> templateParameters;
 
+  @Getter
+  @Setter
+  private String category;
+
   /**
    * Create new list of JasperTemplateDto based on given list of {@link JasperTemplate}.
    *

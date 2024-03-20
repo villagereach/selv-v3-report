@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.0.1.final using JasperReports Library version 6.0.0  -->
-<!-- 2024-03-19T13:38:37 -->
+<!-- 2024-03-20T09:52:53 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="selv_stock_on_hand" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="02ddb868-90a6-4a2e-a0c7-6a18e82c6c9c">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="SELV uat Data Adapter "/>
     <property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="pageHeader"/>
@@ -74,6 +74,11 @@ FROM (
 		(facilities.name = $P{facility} OR $P{facility} IS NULL)
 		and
 		(facilities_types.name = $P{facilityType} OR $P{facilityType} IS NULL)
+		and (
+      	($P{expiredProducts} = 'true' AND lots.expirationdate < $P{date}::date) OR
+      	($P{expiredProducts} = 'false' AND lots.expirationdate >= $P{date}::date) OR
+      	$P{expiredProducts} IS NULL
+    	)
 		and (
       	zones.id IN (
         	SELECT id
@@ -186,6 +191,11 @@ FROM (
     AND (
       products.fullproductname = $P{product}
       OR $P{product} IS NULL
+    )
+    AND (
+      ($P{expiredProducts} = 'true' AND lots.expirationdate < $P{date}::date) OR
+      ($P{expiredProducts} = 'false' AND lots.expirationdate >= $P{date}::date) OR
+      $P{expiredProducts} IS NULL
     )
     AND (
       zones.id IN (
@@ -501,7 +511,6 @@ GROUP BY
     <detail>
         <band height="41" splitType="Prevent">
             <property name="com.jaspersoft.studio.layout"/>
-            <printWhenExpression><![CDATA[$P{expiredProducts} == null || (($F{monthsToExpire} < 0 && $P{expiredProducts}.equals("true")) || $F{productExpiryDate} == null) || (($F{monthsToExpire} > 0 && $P{expiredProducts}.equals("false")) || $F{productExpiryDate} == null)]]></printWhenExpression>
             <rectangle>
                 <reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="801" height="40" backcolor="#F0F0F0" uuid="2de367b0-e3ff-42e2-b474-e9accdcd1c69"/>
                 <graphicElement>

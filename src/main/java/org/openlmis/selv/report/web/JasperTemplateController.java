@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
 import org.openlmis.selv.report.domain.JasperTemplate;
 import org.openlmis.selv.report.dto.JasperTemplateDto;
 import org.openlmis.selv.report.exception.JasperReportViewException;
@@ -38,6 +37,8 @@ import org.openlmis.selv.report.service.JasperReportsViewService;
 import org.openlmis.selv.report.service.JasperTemplateService;
 import org.openlmis.selv.report.service.PermissionService;
 import org.openlmis.selv.report.utils.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,7 @@ import org.springframework.web.servlet.view.jasperreports.JasperReportsMultiForm
 @Transactional
 @RequestMapping("/api/reports/templates/common")
 public class JasperTemplateController extends BaseController {
-  private static final Logger LOGGER = Logger.getLogger(JasperTemplateController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(JasperTemplateController.class);
 
   @Autowired
   private JasperTemplateService jasperTemplateService;
@@ -97,7 +98,7 @@ public class JasperTemplateController extends BaseController {
   @ResponseStatus(HttpStatus.OK)
   public void createJasperReportTemplate(
       @RequestPart("file") MultipartFile file, String name, String description,
-      String[] requiredRights) throws ReportingException {
+      String[] requiredRights, String category) throws ReportingException {
     permissionService.canEditReportTemplates();
 
     LOGGER.debug("Saving template with name: " + name);
@@ -106,7 +107,7 @@ public class JasperTemplateController extends BaseController {
         ? Collections.emptyList() : Arrays.asList(requiredRights);
 
     JasperTemplate template = jasperTemplateService
-        .saveTemplate(file, name, description, rightList);
+        .saveTemplate(file, name, description, rightList, category);
 
     LOGGER.debug("Saved template with id: " + template.getId());
   }

@@ -17,6 +17,8 @@ package org.openlmis.selv.report.service;
 
 import static org.openlmis.selv.report.i18n.PermissionMessageKeys.ERROR_NO_PERMISSION;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.openlmis.selv.report.dto.external.ResultDto;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
@@ -32,8 +34,11 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("PMD.TooManyMethods")
 public class PermissionService {
   static final String REPORT_TEMPLATES_EDIT = "REPORT_TEMPLATES_EDIT";
+  static final String REPORTS_MANAGE = "REPORTS_MANAGE";
+  static final String REPORT_CATEGORIES_MANAGE = "REPORT_CATEGORIES_MANAGE";
   public static final String REPORTS_VIEW = "REPORTS_VIEW";
   public static final String REQUISITION_VIEW = "REQUISITION_VIEW";
 
@@ -48,10 +53,37 @@ public class PermissionService {
   }
 
   /**
+   * Check whether the user can manage report categories - has MANAGE_REPORT_CATEGORIES permission.
+   */
+  public void canManageReportCategories() {
+    checkPermission(REPORT_CATEGORIES_MANAGE);
+  }
+
+  /**
    * Check whether the user has REPORTS_VIEW permission.
    */
   public void canViewReports() {
     checkPermission(REPORTS_VIEW);
+  }
+
+  /**
+   * Check whether the user can manage reports - has MANAGE_DASHBOARD_REPORTS permission.
+   */
+  public void canManageReports() {
+    checkPermission(REPORTS_MANAGE);
+  }
+
+  /**
+   * Filters rights for which user has permission.
+   */
+  public List<String> filterRightsForUser(List<String> rightNames) {
+    List<String> accessibleRights = new ArrayList<>();
+    for (String rightName : rightNames) {
+      if (hasPermission(rightName)) {
+        accessibleRights.add(rightName);
+      }
+    }
+    return accessibleRights;
   }
 
   /**

@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -76,6 +77,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.openlmis.selv.report.domain.JasperTemplate;
 import org.openlmis.selv.report.domain.JasperTemplateParameter;
+import org.openlmis.selv.report.domain.ReportCategory;
 import org.openlmis.selv.report.domain.ReportImage;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.exception.JasperReportViewException;
@@ -83,6 +85,7 @@ import org.openlmis.selv.report.exception.ReportingException;
 import org.openlmis.selv.report.exception.ValidationMessageException;
 import org.openlmis.selv.report.i18n.ReportImageMessageKeys;
 import org.openlmis.selv.report.repository.JasperTemplateRepository;
+import org.openlmis.selv.report.repository.ReportCategoryRepository;
 import org.openlmis.selv.report.repository.ReportImageRepository;
 import org.openlmis.selv.report.service.referencedata.RightReferenceDataService;
 import org.powermock.api.mockito.PowerMockito;
@@ -107,6 +110,9 @@ public class JasperTemplateServiceTest {
   @Mock
   private ReportImageRepository reportImageRepository;
 
+  @Mock
+  private ReportCategoryRepository reportCategoryRepository;
+
   @InjectMocks
   private JasperTemplateService jasperTemplateService;
 
@@ -115,6 +121,7 @@ public class JasperTemplateServiceTest {
 
   private static final String NAME_OF_FILE = "report.jrxml";
   private static final String DISPLAY_NAME = "displayName";
+  private static final String CATEGORY_NAME = "categoryName";
   private static final String PARAM_DISPLAY_NAME = "Param Display Name";
   private static final String REQUIRED = "required";
   private static final String PARAM1 = "param1";
@@ -134,35 +141,50 @@ public class JasperTemplateServiceTest {
 
   @Test
   public void shouldSaveValidNonExistentTemplate() throws Exception {
+    ReportCategory reportCategory = new ReportCategory();
+    reportCategory.setId(UUID.randomUUID());
+    reportCategory.setName(CATEGORY_NAME);
+
     // given
     given(jasperTemplateRepository.findByName(anyString()))
         .willReturn(null);
 
+    given(reportCategoryRepository.findByName(anyString()))
+            .willReturn(Optional.of(reportCategory));
+
     // when
-    testSaveTemplate(DISPLAY_NAME);
+    testSaveTemplate();
   }
 
   @Test
   public void shouldUpdateValidExistentTemplate() throws Exception {
     // given
+    ReportCategory reportCategory = new ReportCategory();
+    reportCategory.setId(UUID.randomUUID());
+    reportCategory.setName(CATEGORY_NAME);
+
     UUID oldId = UUID.randomUUID();
 
     JasperTemplate oldTemplate = new JasperTemplate();
     oldTemplate.setName(DISPLAY_NAME);
     oldTemplate.setId(oldId);
     oldTemplate.setRequiredRights(new ArrayList<>());
+    oldTemplate.setCategory(reportCategory);
 
     given(jasperTemplateRepository.findByName(anyString()))
         .willReturn(oldTemplate);
 
+    given(reportCategoryRepository.findByName(anyString()))
+        .willReturn(Optional.ofNullable(oldTemplate.getCategory()));
+
     // when
-    JasperTemplate template = testSaveTemplate(DISPLAY_NAME);
+    JasperTemplate template = testSaveTemplate();
 
     // then
     assertEquals(template.getId(), oldId);
   }
 
-  private JasperTemplate testSaveTemplate(String name) throws ReportingException {
+  private JasperTemplate testSaveTemplate() throws ReportingException {
     JasperTemplateService service = PowerMockito.spy(jasperTemplateService);
     MultipartFile file = mock(MultipartFile.class);
     String description = "description";
@@ -176,10 +198,12 @@ public class JasperTemplateServiceTest {
         .validateFileAndSaveTemplate(any(JasperTemplate.class), eq(file));
 
     // when
-    JasperTemplate resultTemplate = service.saveTemplate(file, name, description, requiredRights);
+    JasperTemplate resultTemplate = service.saveTemplate(file,
+        JasperTemplateServiceTest.DISPLAY_NAME, description, requiredRights, CATEGORY_NAME);
 
     // then
-    assertEquals(name, resultTemplate.getName());
+    assertEquals(JasperTemplateServiceTest.DISPLAY_NAME, resultTemplate.getName());
+    assertEquals(JasperTemplateServiceTest.DISPLAY_NAME, resultTemplate.getName());
     assertEquals(description, resultTemplate.getDescription());
     assertEquals(requiredRights, resultTemplate.getRequiredRights());
 
@@ -196,7 +220,8 @@ public class JasperTemplateServiceTest {
     given(rightReferenceDataService.findRight(rejectedRight)).willReturn(null);
 
     // when
-    jasperTemplateService.saveTemplate(null, null, null, Collections.singletonList(rejectedRight));
+    jasperTemplateService.saveTemplate(null, null, null, Collections.singletonList(rejectedRight),
+        null);
   }
   
   @Test

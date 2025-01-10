@@ -13,20 +13,17 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.repository;
+package org.openlmis.selv.report.i18n;
 
-import java.util.List;
-import java.util.UUID;
-import org.openlmis.selv.report.domain.JasperTemplate;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-
-public interface JasperTemplateRepository
-    extends PagingAndSortingRepository<JasperTemplate, UUID> {
-
-  JasperTemplate findByName(@Param("name") String name);
-
-  List<JasperTemplate> findByVisible(boolean visible);
-
-  boolean existsByCategory_Id(UUID categoryId);
+public class DashboardReportMessageKeys extends MessageKeys {
+  public static final String ERROR_DASHBOARD_REPORT_NAME_DUPLICATED =
+      "report.error.dashboardReport.name.duplicated";
+  public static final String ERROR_DASHBOARD_REPORT_NOT_FOUND =
+      "report.error.dashboardReport.notFound";
+  public static final String ERROR_DASHBOARD_REPORT_ID_MISMATCH =
+      "report.error.dashboardReport.id.mismatch";
+  public static final String ERROR_COULD_NOT_SAVE_RIGHT =
+      "report.error.dashboardReport.save.right.failed";
+  public static final String ERROR_COULD_NOT_DELETE_RIGHT =
+      "report.error.dashboardReport.delete.right.failed";
 }

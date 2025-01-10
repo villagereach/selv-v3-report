@@ -14,7 +14,8 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
 apply plugin: 'checkstyle'
 
@@ -26,12 +27,6 @@ sourceSets {
             srcDir file('src/integration-test/java')
         }
         resources.srcDir file('src/integration-test/resources')
-    }
-
-    main {
-        resources {
-            srcDirs "src/main/resources", "build/data"
-        }
     }
 }
 

@@ -26,42 +26,22 @@ import lombok.Setter;
 import org.openlmis.selv.report.domain.JasperTemplate;
 import org.openlmis.selv.report.domain.JasperTemplate.Exporter;
 import org.openlmis.selv.report.domain.JasperTemplateParameter;
+import org.openlmis.selv.report.domain.ReportCategory;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class JasperTemplateDto implements Exporter {
 
-  @Getter
-  @Setter
   private UUID id;
-
-  @Getter
-  @Setter
   private String name;
-
-  @Getter
-  @Setter
   private String type;
-
-  @Getter
-  @Setter
   private String description;
-
-  @Getter
-  @Setter
   private byte[] data;
-
-  @Getter
-  @Setter
   private List<String> requiredRights;
-
-  @Getter
-  @Setter
   private List<JasperTemplateParameter.Exporter> templateParameters;
-
-  @Getter
-  @Setter
-  private String category;
+  private ReportCategory category;
 
   /**
    * Create new list of JasperTemplateDto based on given list of {@link JasperTemplate}.

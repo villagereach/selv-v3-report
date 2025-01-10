@@ -18,9 +18,10 @@ package org.openlmis.selv.report.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -31,16 +32,20 @@ import guru.nidi.ramltester.junit.RamlMatchers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openlmis.selv.report.domain.JasperTemplate;
+import org.openlmis.selv.report.domain.ReportCategory;
 import org.openlmis.selv.report.dto.JasperTemplateDto;
 import org.openlmis.selv.report.exception.JasperReportViewException;
 import org.openlmis.selv.report.exception.PermissionMessageException;
 import org.openlmis.selv.report.repository.JasperTemplateRepository;
+import org.openlmis.selv.report.repository.ReportCategoryRepository;
 import org.openlmis.selv.report.service.JasperReportsViewService;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -55,6 +60,7 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
   private static final String FORMAT_PARAM = "format";
   private static final String REPORT_URL = ID_URL + "/{" + FORMAT_PARAM + "}";
   private static final String PDF_FORMAT = "pdf";
+  private static final String CATEGORY_NAME = "Default Category";
 
   @MockBean
   private JasperTemplateRepository jasperTemplateRepository;
@@ -62,9 +68,22 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
   @MockBean
   private JasperReportsViewService jasperReportsViewService;
 
+  @MockBean
+  private ReportCategoryRepository reportCategoryRepository;
+
+  private ReportCategory reportCategory;
+
   @Before
   public void setUp() {
     mockUserAuthenticated();
+
+    reportCategory = new ReportCategory();
+    reportCategory.setId(UUID.randomUUID());
+    reportCategory.setName(CATEGORY_NAME);
+
+    given(reportCategoryRepository.findByName(anyString())).willReturn(
+            Optional.ofNullable(reportCategory));
+    given(reportCategoryRepository.save(any(ReportCategory.class))).willReturn(reportCategory);
   }
 
   // GET /api/reports/templates
@@ -170,7 +189,7 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
         .then()
         .statusCode(404);
 
-    // them
+    // then
     assertThat(RAML_ASSERT_MESSAGE, restAssured.getLastReport(), RamlMatchers.hasNoViolations());
   }
 
@@ -254,7 +273,7 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
     template.setRequiredRights(Collections.singletonList(deniedPermission));
 
     PermissionMessageException ex = mockPermissionException(deniedPermission);
-    doThrow(ex).when(permissionService).validatePermissions(any(String[].class));
+    doThrow(ex).when(permissionService).validatePermissions(any());
 
     // when
     restAssured.given()
@@ -329,6 +348,7 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
     template.setId(id);
     template.setName("name");
     template.setRequiredRights(new ArrayList<>());
+    template.setCategory(reportCategory);
 
     given(jasperTemplateRepository.findOne(id)).willReturn(template);
 

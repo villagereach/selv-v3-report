@@ -13,20 +13,9 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.repository;
+package org.openlmis.selv.report.utils;
 
-import java.util.List;
-import java.util.UUID;
-import org.openlmis.selv.report.domain.JasperTemplate;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-
-public interface JasperTemplateRepository
-    extends PagingAndSortingRepository<JasperTemplate, UUID> {
-
-  JasperTemplate findByName(@Param("name") String name);
-
-  List<JasperTemplate> findByVisible(boolean visible);
-
-  boolean existsByCategory_Id(UUID categoryId);
+public enum ReportType {
+  POWERBI,
+  SUPERSET
 }

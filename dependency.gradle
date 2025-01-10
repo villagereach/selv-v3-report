@@ -23,7 +23,7 @@ dependencies {
     compile "net.sf.jasperreports:jasperreports:6.4.1"
     compile "org.apache.commons:commons-lang3:3.5"
     compile "org.flywaydb:flyway-core:4.0.3"
-    compile "org.javers:javers-spring-boot-starter-sql:2.8.1"
+    compile "org.javers:javers-spring-boot-starter-sql:5.13.2"
     compile "org.postgresql:postgresql:42.0.0"
     compile "org.projectlombok:lombok:1.16.8"
     compile 'org.webjars.npm:api-console:3.0.17'
@@ -38,10 +38,10 @@ dependencies {
     testCompile "io.rest-assured:json-schema-validator:3.0.0"
     testCompile "io.rest-assured:spring-mock-mvc:3.0.0"
 
-    testCompile "junit:junit"
-    testCompile "org.mockito:mockito-core:1.+"
-    testCompile "org.powermock:powermock-api-mockito:1.6.5"
-    testCompile "org.powermock:powermock-module-junit4:1.6.5"
+    testCompile "junit:junit:4.13.2"
+    testCompile "org.mockito:mockito-core:2.28.2"
+    testCompile "org.powermock:powermock-api-mockito2:2.0.4"
+    testCompile "org.powermock:powermock-module-junit4:2.0.4"
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "nl.jqno.equalsverifier:equalsverifier:2.4"
 }

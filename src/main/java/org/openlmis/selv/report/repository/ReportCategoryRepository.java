@@ -15,18 +15,19 @@
 
 package org.openlmis.selv.report.repository;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import org.openlmis.selv.report.domain.JasperTemplate;
+
+import org.openlmis.selv.report.domain.ReportCategory;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 
-public interface JasperTemplateRepository
-    extends PagingAndSortingRepository<JasperTemplate, UUID> {
+public interface ReportCategoryRepository
+    extends PagingAndSortingRepository<ReportCategory, UUID> {
+  Optional<ReportCategory> findByName(String name);
 
-  JasperTemplate findByName(@Param("name") String name);
+  boolean existsByName(String name);
 
-  List<JasperTemplate> findByVisible(boolean visible);
+  Optional<ReportCategory> findById(UUID id);
 
-  boolean existsByCategory_Id(UUID categoryId);
+  boolean existsByIdIsNotAndName(UUID id, String name);
 }

@@ -27,7 +27,7 @@ import org.javers.repository.sql.DialectName;
 import org.javers.repository.sql.JaversSqlRepository;
 import org.javers.repository.sql.SqlRepositoryBuilder;
 import org.javers.spring.auditable.AuthorProvider;
-import org.javers.spring.boot.sql.JaversProperties;
+import org.javers.spring.boot.sql.JaversSqlProperties;
 import org.javers.spring.jpa.TransactionalJaversBuilder;
 import org.openlmis.selv.report.domain.BaseEntity;
 import org.openlmis.selv.report.i18n.ExposedMessageSourceImpl;
@@ -58,7 +58,7 @@ public class Application {
   private DialectName dialectName;
 
   @Autowired
-  private JaversProperties javersProperties;
+  private JaversSqlProperties javersProperties;
 
   @Value("${spring.jpa.properties.hibernate.default_schema}")
   private String preferredSchema;
@@ -133,8 +133,6 @@ public class Application {
         .withSchema(preferredSchema)
         .build();
 
-    JaVersDateProvider customDateProvider = new JaVersDateProvider();
-
     return TransactionalJaversBuilder
         .javers()
         .withTxManager(transactionManager)
@@ -148,7 +146,6 @@ public class Application {
         .withPrettyPrint(javersProperties.isPrettyPrint())
         .withTypeSafeValues(javersProperties.isTypeSafeValues())
         .withPackagesToScan(javersProperties.getPackagesToScan())
-        .withDateTimeProvider(customDateProvider)
         .build();
   }
 

@@ -15,17 +15,26 @@
 
 package org.openlmis.selv.report.service.referencedata;
 
+import static org.openlmis.selv.report.utils.RequestHelper.createUri;
+
 import java.util.List;
+import java.util.UUID;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
+import org.openlmis.selv.report.exception.ValidationMessageException;
+import org.openlmis.selv.report.i18n.DashboardReportMessageKeys;
+import org.openlmis.selv.report.utils.Message;
+import org.openlmis.selv.report.utils.RequestHelper;
 import org.openlmis.selv.report.utils.RequestParameters;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Service
 public class RightReferenceDataService extends BaseReferenceDataService<RightDto> {
 
   @Override
   protected String getUrl() {
-    return "/api/rights/";
+    return "/api/rights";
   }
 
   @Override
@@ -45,7 +54,54 @@ public class RightReferenceDataService extends BaseReferenceDataService<RightDto
    * @return right related with the name or {@code null}.
    */
   public RightDto findRight(String name) {
-    List<RightDto> rights = findAll("search", RequestParameters.init().set("name", name));
+    List<RightDto> rights = findAll("/search", RequestParameters.init().set("name", name));
     return rights.isEmpty() ? null : rights.get(0);
+  }
+
+  /**
+   * Save a new right by making a POST request to the referenced data service.
+   *
+   * @param rightDto the RightDto to save
+   */
+  @SuppressWarnings("PMD.PreserveStackTrace")
+  public void save(RightDto rightDto) {
+    String url = getServiceUrl() + getUrl();
+
+    try {
+      runWithTokenRetry(() ->
+          restTemplate.exchange(
+              createUri(url),
+              HttpMethod.PUT,
+              RequestHelper.createEntity(authorizationService.obtainAccessToken(), rightDto),
+              RightDto.class
+      ));
+    } catch (HttpStatusCodeException ex) {
+      throw new ValidationMessageException(
+          new Message(DashboardReportMessageKeys.ERROR_COULD_NOT_SAVE_RIGHT, rightDto.getName()));
+    }
+  }
+
+  /**
+   * Delete an existing right by making a DELETE request to the referencedata service.
+   *
+   * @param rightId the ID of the RightDto to delete
+   */
+  @SuppressWarnings("PMD.PreserveStackTrace")
+  public void delete(UUID rightId) {
+    String url = getServiceUrl() + getUrl() + "/" + rightId;
+
+    try {
+      runWithTokenRetry(() ->
+          restTemplate.exchange(
+              createUri(url),
+              HttpMethod.DELETE,
+              RequestHelper.createEntity(authorizationService.obtainAccessToken(), null),
+              Void.class
+          )
+      );
+    } catch (HttpStatusCodeException ex) {
+      throw new ValidationMessageException(
+          new Message(DashboardReportMessageKeys.ERROR_COULD_NOT_DELETE_RIGHT, rightId, ex));
+    }
   }
 }

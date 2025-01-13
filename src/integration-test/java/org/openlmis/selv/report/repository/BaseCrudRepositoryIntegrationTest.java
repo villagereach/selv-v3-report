@@ -24,12 +24,14 @@ import org.openlmis.selv.report.domain.BaseEntity;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest
 @DirtiesContext
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 public abstract class BaseCrudRepositoryIntegrationTest<T extends BaseEntity> {
 
@@ -41,10 +43,16 @@ public abstract class BaseCrudRepositoryIntegrationTest<T extends BaseEntity> {
    */
   abstract T generateInstance();
 
-  private AtomicInteger instanceNumber = new AtomicInteger(0);
+  private final AtomicInteger instanceNumber = new AtomicInteger(0);
+  private final AtomicInteger categoryNumber = new AtomicInteger(0);
+
 
   int getNextInstanceNumber() {
     return this.instanceNumber.incrementAndGet();
+  }
+
+  int getNextCategoryNumber() {
+    return this.categoryNumber.incrementAndGet();
   }
 
   protected void assertInstance(T instance) {

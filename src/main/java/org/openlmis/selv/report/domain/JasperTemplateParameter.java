@@ -45,69 +45,47 @@ import org.openlmis.selv.report.dto.JasperTemplateParameterDependencyDto;
  */
 @Entity
 @Table(name = "template_parameters")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class JasperTemplateParameter extends BaseEntity {
 
   @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "templateId", nullable = false)
-  @Getter
-  @Setter
   private JasperTemplate template;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String name;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String displayName;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String defaultValue;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String dataType;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String selectExpression;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String selectMethod;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String selectBody;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String selectProperty;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String displayProperty;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
-  @Getter
-  @Setter
   private String description;
 
   @ElementCollection
-  @Getter
-  @Setter
   private List<String> options;
 
   @OneToMany(
@@ -115,13 +93,9 @@ public class JasperTemplateParameter extends BaseEntity {
       cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE},
       fetch = FetchType.EAGER,
       orphanRemoval = true)
-  @Getter
-  @Setter
   private List<JasperTemplateParameterDependency> dependencies;
 
   @Column(nullable = false)
-  @Getter
-  @Setter
   private Boolean required;
 
   /**

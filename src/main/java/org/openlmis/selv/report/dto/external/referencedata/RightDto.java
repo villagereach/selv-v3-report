@@ -15,7 +15,6 @@
 
 package org.openlmis.selv.report.dto.external.referencedata;
 
-import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,5 +32,4 @@ public final class RightDto {
   private String name;
   private RightType type;
   private String description;
-  private Set<RightDto> attachments;
 }

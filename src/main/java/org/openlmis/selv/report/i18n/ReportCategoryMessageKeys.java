@@ -13,20 +13,15 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.repository;
+package org.openlmis.selv.report.i18n;
 
-import java.util.List;
-import java.util.UUID;
-import org.openlmis.selv.report.domain.JasperTemplate;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-
-public interface JasperTemplateRepository
-    extends PagingAndSortingRepository<JasperTemplate, UUID> {
-
-  JasperTemplate findByName(@Param("name") String name);
-
-  List<JasperTemplate> findByVisible(boolean visible);
-
-  boolean existsByCategory_Id(UUID categoryId);
+public class ReportCategoryMessageKeys extends MessageKeys {
+  public static final String ERROR_REPORT_CATEGORY_NAME_DUPLICATED =
+      "report.error.reportCategory.name.duplicated";
+  public static final String ERROR_REPORT_CATEGORY_NOT_FOUND =
+      "report.error.reportCategory.notFound";
+  public static final String ERROR_REPORT_CATEGORY_ID_MISMATCH =
+      "report.error.reportCategory.id.mismatch";
+  public static final String ERROR_CATEGORY_ALREADY_ASSIGNED =
+      "report.error.reportCategory.already.assigned";
 }

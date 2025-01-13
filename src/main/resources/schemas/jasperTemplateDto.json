@@ -44,10 +44,15 @@
     "description": {
       "type": ["string", "null"],
       "title": "description"
+    },
+    "category": {
+      "type": "object",
+      "$ref": "reportCategoryDto.json"
     }
   } ,
   "required": [
     "id",
-    "name"
+    "name",
+    "category"
   ]
 }

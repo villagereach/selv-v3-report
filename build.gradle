@@ -28,6 +28,12 @@ sourceSets {
         }
         resources.srcDir file('src/integration-test/resources')
     }
+
+    main {
+        resources {
+            srcDirs "src/main/resources", "build/data"
+        }
+    }
 }
 
 apply from: "dependency.gradle"

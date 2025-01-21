@@ -78,10 +78,7 @@ public class ReportCategoryService {
    * Get page of all report categories.
    */
   public Page<ReportCategoryDto> getAllReportCategories(Pageable pageable) {
-    permissionService.canManageReportCategories();
-
     Page<ReportCategory> reportCategories = reportCategoryRepository.findAll(pageable);
-
     return reportCategories.map(ReportCategoryDto::newInstance);
   }
 

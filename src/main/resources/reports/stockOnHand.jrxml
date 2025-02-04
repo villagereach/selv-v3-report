@@ -124,6 +124,12 @@ GROUP BY soh_data.facilityName,
 		<property name="displayName" value="Product"/>
 		<property name="required" value="false"/>
 	</parameter>
+	<parameter name="maxLength" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[30]]></defaultValueExpression>
+	</parameter>
+	<parameter name="isPDFGenerated" class="java.lang.Boolean" isForPrompting="false">
+		<defaultValueExpression><![CDATA[Arrays.asList("pdf").contains($P{REPORT_PARAMETERS_MAP}.get("format"))]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[WITH RECURSIVE findChildZones AS (
   SELECT * FROM referencedata.geographic_zones WHERE name = $P{geographicZone}::varchar
@@ -567,27 +573,16 @@ GROUP BY
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="41" splitType="Prevent">
+		<band height="46" splitType="Prevent">
 			<property name="com.jaspersoft.studio.layout"/>
 			<rectangle>
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="801" height="40" backcolor="#F0F0F0" uuid="2de367b0-e3ff-42e2-b474-e9accdcd1c69"/>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="801" height="45" backcolor="#F0F0F0" uuid="2de367b0-e3ff-42e2-b474-e9accdcd1c69"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="80" height="40" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
-				<box>
-					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font isBold="false"/>
-					<paragraph lineSpacing="1_1_2"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{facilityName}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="80" y="0" width="70" height="40" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
+				<reportElement x="0" y="0" width="80" height="45" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -595,10 +590,12 @@ GROUP BY
 					<font isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{productId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{facilityName}.length() > $P{maxLength} 
+        ? $F{facilityName}.substring(0, $P{maxLength}) + "..." 
+        : $F{facilityName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="150" y="0" width="80" height="40" uuid="158b0d96-0c90-48a4-87de-36d2380266af"/>
+				<reportElement x="80" y="0" width="70" height="45" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -606,10 +603,12 @@ GROUP BY
 					<font isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{district}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{productId}.length() > $P{maxLength} 
+        ? $F{productId}.substring(0, $P{maxLength}) + "..." 
+        : $F{productId}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="230" y="0" width="80" height="40" uuid="fd442db8-d9e9-4693-a7b4-e1d3fc0a2773"/>
+				<reportElement x="150" y="0" width="80" height="45" uuid="158b0d96-0c90-48a4-87de-36d2380266af"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -617,10 +616,12 @@ GROUP BY
 					<font isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{facilityType}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{district}.length() > $P{maxLength} 
+        ? $F{district}.substring(0, $P{maxLength}) + "..." 
+        : $F{district}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="310" y="0" width="80" height="40" uuid="ab42938c-4f7b-46c9-bf11-f7b13edd26c9"/>
+				<reportElement x="230" y="0" width="80" height="45" uuid="fd442db8-d9e9-4693-a7b4-e1d3fc0a2773"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -628,10 +629,12 @@ GROUP BY
 					<font isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{facilityType}.length() > $P{maxLength} 
+        ? $F{facilityType}.substring(0, $P{maxLength}) + "..." 
+        : $F{facilityType}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="390" y="0" width="70" height="40" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
+				<reportElement x="310" y="0" width="80" height="45" uuid="ab42938c-4f7b-46c9-bf11-f7b13edd26c9"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -639,10 +642,12 @@ GROUP BY
 					<font isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{supplier}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{productName}.length() > $P{maxLength} 
+        ? $F{productName}.substring(0, $P{maxLength}) + "..." 
+        : $F{productName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="460" y="0" width="60" height="40" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
+				<reportElement x="390" y="0" width="70" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -650,10 +655,25 @@ GROUP BY
 					<font isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{productLotCode}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{supplier}.length() > $P{maxLength} 
+        ? $F{supplier}.substring(0, $P{maxLength}) + "..." 
+        : $F{supplier}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement style="MarkedExpiredProductDate" x="520" y="0" width="60" height="40" uuid="5008306e-d65e-4e8f-b915-f7a3aa7d9328"/>
+				<reportElement x="460" y="0" width="60" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{isPDFGenerated} && $F{productLotCode}.length() > $P{maxLength} 
+        ? $F{productLotCode}.substring(0, $P{maxLength}) + "..." 
+        : $F{productLotCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="MarkedExpiredProductDate" x="520" y="0" width="60" height="45" uuid="5008306e-d65e-4e8f-b915-f7a3aa7d9328"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -664,7 +684,7 @@ GROUP BY
 				<textFieldExpression><![CDATA[$F{productExpiryDate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="580" y="0" width="49" height="40" uuid="484c46c2-05e8-461f-8d10-d36048f6e909"/>
+				<reportElement x="580" y="0" width="49" height="45" uuid="484c46c2-05e8-461f-8d10-d36048f6e909"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -675,7 +695,7 @@ GROUP BY
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="630" y="0" width="120" height="40" uuid="6f4f2b9e-2e7a-4aca-a686-4f4d9bd6af5d"/>
+				<reportElement x="630" y="0" width="120" height="45" uuid="6f4f2b9e-2e7a-4aca-a686-4f4d9bd6af5d"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -686,7 +706,7 @@ GROUP BY
 				<textFieldExpression><![CDATA[$F{netContent}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="750" y="0" width="51" height="40" uuid="6f4f2b9e-2e7a-4aca-a686-4f4d9bd6af5d"/>
+				<reportElement x="750" y="0" width="51" height="45" uuid="6f4f2b9e-2e7a-4aca-a686-4f4d9bd6af5d"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>

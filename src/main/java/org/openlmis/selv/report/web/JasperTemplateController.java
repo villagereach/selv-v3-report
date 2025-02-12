@@ -218,7 +218,7 @@ public class JasperTemplateController extends BaseController {
     map.put("decimalFormat", decimalFormat);
 
     UserDto currentUser = authenticationHelper.getCurrentUser();
-    map.put("userId", currentUser.getId());
+    map.put("userId", currentUser.getId().toString());
 
     JasperReportsMultiFormatView jasperView = jasperReportsViewService
         .getJasperReportsView(template, request);

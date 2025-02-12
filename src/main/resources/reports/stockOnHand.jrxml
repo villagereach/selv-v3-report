@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="selv_stock_on_hand" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="02ddb868-90a6-4a2e-a0c7-6a18e82c6c9c">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SELV uat Data Adapter "/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="pageHeader"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
@@ -24,12 +23,18 @@
 		<parameter name="facility" class="java.lang.String" nestedType="java.lang.String"/>
 		<parameter name="timeZone" class="java.lang.String" isForPrompting="false"/>
 		<parameter name="geographicZone" class="java.lang.String" nestedType="java.lang.String"/>
+		<parameter name="userId" class="java.lang.String" nestedType="java.lang.String"/>
 		<queryString>
 			<![CDATA[WITH RECURSIVE findChildZones AS (
   SELECT * FROM referencedata.geographic_zones WHERE name = $P{geographicZone}::varchar
   UNION ALL
-  SELECT referencedata.geographic_zones.* FROM referencedata.geographic_zones JOIN findChildZones ON findChildZones.id = referencedata.geographic_zones.parentId)
-select
+  SELECT referencedata.geographic_zones.* FROM referencedata.geographic_zones JOIN findChildZones ON findChildZones.id = referencedata.geographic_zones.parentId
+  ),
+  user_rights as (
+    select facilityid, programid, userid from referencedata.right_assignments ra
+    where ra.rightname = 'STOCK_CARDS_VIEW' and ra.userId = $P{userId}::uuid
+  )
+  select
 	soh_data.facilityName as facilityName,
 	soh_data.productId AS productId,
 	soh_data.productName AS productName,
@@ -54,7 +59,9 @@ FROM (
 		RANK () OVER (
 		PARTITION BY products.id
 		ORDER BY products.versionnumber DESC) AS product_version_rank,
-		max(soh.occurreddate) as max_date
+		max(soh.occurreddate) as max_date,
+		stock_cards.programid AS programId,
+        facilities.id as facilityId
 	FROM
 		stockmanagement.stock_cards AS stock_cards
 		    JOIN stockmanagement.calculated_stocks_on_hand AS soh ON soh.stockcardid = stock_cards.id
@@ -84,12 +91,15 @@ FROM (
         	FROM findChildZones)
       	OR $P{geographicZone} IS NULL
     )
-	group by products.code, products.fullproductname, lots.lotcode, lots.expirationdate, soh.stockonhand, facilities."name", soh.occurreddate, zones.name, products.versionnumber, products.id, lots.id
+	group by products.code, products.fullproductname, lots.lotcode, lots.expirationdate, soh.stockonhand, facilities."name", soh.occurreddate, zones.name, products.versionnumber, products.id, lots.id, stock_cards.programid,facilities.id
 ) AS soh_data
+JOIN user_rights ur
+    ON soh_data.programid = ur.programid
+    and soh_data.facilityid = ur.facilityid
 WHERE soh_data.product_version_rank = 1
 GROUP BY soh_data.facilityName,
 	soh_data.productName,
-	soh_data.productId]]>
+	soh_data.productId;]]>
 		</queryString>
 		<field name="facilityName" class="java.lang.String"/>
 		<field name="productId" class="java.lang.String"/>
@@ -127,6 +137,9 @@ GROUP BY soh_data.facilityName,
 	<parameter name="maxLength" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[30]]></defaultValueExpression>
 	</parameter>
+	<parameter name="userId" class="java.lang.String" nestedType="java.lang.String">
+		<property name="displayName" value="Delete from template parameters"/>
+	</parameter>
 	<parameter name="isPDFGenerated" class="java.lang.Boolean" isForPrompting="false">
 		<defaultValueExpression><![CDATA[Arrays.asList("pdf").contains($P{REPORT_PARAMETERS_MAP}.get("format"))]]></defaultValueExpression>
 	</parameter>
@@ -141,6 +154,10 @@ latest_orderable_identifiers AS (
   FROM referencedata.orderable_identifiers
   WHERE "key" = 'tradeItem'
   ORDER BY orderableid, orderableversionnumber DESC
+),
+user_rights as (
+  select facilityid, programid, userid from referencedata.right_assignments ra
+  where ra.rightname = 'STOCK_CARDS_VIEW' and ra.userId = $P{userId}::uuid
 )
 SELECT
   soh_data.facilityName AS facilityName,
@@ -188,7 +205,9 @@ FROM (
     stock_cards.orderableid AS orderableid,
     stock_cards.id AS stock_card_id,
     zones.name AS district,
-    facilities_types.name AS facilityType
+    facilities_types.name AS facilityType,
+    stock_cards.programid AS programId,
+    facilities.id as facilityId
   FROM
     stockmanagement.stock_cards AS stock_cards
     JOIN stockmanagement.calculated_stocks_on_hand AS soh ON soh.stockcardid = stock_cards.id
@@ -205,7 +224,7 @@ FROM (
     ) AS cs ON cs.stockcardid = soh.stockcardid
     AND cs.max_date = soh.occurreddate
     JOIN referencedata.orderables AS products ON products.id = stock_cards.orderableid
-    JOIN referencedata.lots AS lots ON lots.id = stock_cards.lotid
+    LEFT JOIN referencedata.lots AS lots ON lots.id = stock_cards.lotid
     JOIN referencedata.facilities AS facilities ON facilities.id = stock_cards.facilityid
     JOIN referencedata.facility_types AS facilities_types ON facilities_types.id = facilities.typeid
     JOIN referencedata.geographic_zones AS zones ON zones.id = facilities.geographiczoneid
@@ -251,7 +270,9 @@ FROM (
     lots.id,
     stock_cards.orderableid,
     stock_cards.id,
-    facilities_types.name
+    facilities_types.name,
+    stock_cards.programid,
+    facilities.id
 ) AS soh_data
 LEFT JOIN latest_orderable_identifiers AS orderable_identifiers ON soh_data.orderableid = orderable_identifiers.orderableid
 LEFT JOIN referencedata.trade_items AS trade_items ON orderable_identifiers.value = trade_items.id::varchar
@@ -261,6 +282,10 @@ LEFT JOIN (
   WHERE occurreddate <= $P{date}::date
   ORDER BY stockcardid, occurreddate DESC
 ) AS vialStage ON soh_data.stock_card_id = vialStage.stockcardid
+LEFT JOIN referencedata.programs AS programs ON soh_data.programId = programs.id
+JOIN user_rights ur
+    ON soh_data.programid = ur.programid
+    and soh_data.facilityid = ur.facilityid
 WHERE
   soh_data.product_version_rank = 1
 GROUP BY
@@ -275,7 +300,7 @@ GROUP BY
   trade_items.manufactureroftradeitem,
   vialStage.extradata->>'vvmStatus',
   soh_data.district,
-  soh_data.facilityType]]>
+  soh_data.facilityType;]]>
 	</queryString>
 	<field name="facilityName" class="java.lang.String"/>
 	<field name="productId" class="java.lang.String"/>
@@ -383,6 +408,9 @@ GROUP BY
 							</datasetParameter>
 							<datasetParameter name="facility">
 								<datasetParameterExpression><![CDATA[$P{facility}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="userId">
+								<datasetParameterExpression><![CDATA[$P{userId}]]></datasetParameterExpression>
 							</datasetParameter>
 							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 						</datasetRun>

@@ -28,6 +28,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.openlmis.selv.report.domain.JasperTemplate;
 import org.openlmis.selv.report.dto.JasperTemplateDto;
+import org.openlmis.selv.report.dto.external.referencedata.UserDto;
 import org.openlmis.selv.report.exception.JasperReportViewException;
 import org.openlmis.selv.report.exception.NotFoundMessageException;
 import org.openlmis.selv.report.exception.ReportingException;
@@ -36,6 +37,7 @@ import org.openlmis.selv.report.repository.JasperTemplateRepository;
 import org.openlmis.selv.report.service.JasperReportsViewService;
 import org.openlmis.selv.report.service.JasperTemplateService;
 import org.openlmis.selv.report.service.PermissionService;
+import org.openlmis.selv.report.utils.AuthenticationHelper;
 import org.openlmis.selv.report.utils.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,9 @@ public class JasperTemplateController extends BaseController {
 
   @Autowired
   private PermissionService permissionService;
+
+  @Autowired
+  private AuthenticationHelper authenticationHelper;
 
   @Value("${dateTimeFormat}")
   private String dateTimeFormat;
@@ -211,6 +216,9 @@ public class JasperTemplateController extends BaseController {
     DecimalFormat decimalFormat = new DecimalFormat("", decimalFormatSymbols);
     decimalFormat.setGroupingSize(Integer.parseInt(groupingSize));
     map.put("decimalFormat", decimalFormat);
+
+    UserDto currentUser = authenticationHelper.getCurrentUser();
+    map.put("userId", currentUser.getId());
 
     JasperReportsMultiFormatView jasperView = jasperReportsViewService
         .getJasperReportsView(template, request);

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="selv_stock_on_hand" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="02ddb868-90a6-4a2e-a0c7-6a18e82c6c9c">
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="pageHeader"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="pageFooter"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="selv_stock_on_hand"
+			  pageWidth="842" pageHeight="595"
+			  orientation="Landscape"
+			  whenNoDataType="AllSectionsNoDetail"
+			  columnWidth="555"
+			  leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+			  isFloatColumnFooter="true" uuid="02ddb868-90a6-4a2e-a0c7-6a18e82c6c9c">
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.key.PaginationText"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="pageHeader"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
@@ -35,7 +45,6 @@
     where ra.rightname = 'STOCK_CARDS_VIEW' and ra.userId = $P{userId}::uuid
   )
   select
-	soh_data.facilityName as facilityName,
 	soh_data.productId AS productId,
 	soh_data.productName AS productName,
 	SUM(soh_data.stockonhand) AS quantity
@@ -72,7 +81,7 @@ FROM (
         group by stockcardid
     ) as cs on cs.stockcardid = soh.stockcardid and cs.max_date = soh.occurreddate
 		JOIN referencedata.orderables AS products ON products.id = stock_cards.orderableid
-		 JOIN referencedata.lots AS lots ON lots.id = stock_cards.lotid
+		LEFT JOIN referencedata.lots AS lots ON lots.id = stock_cards.lotid
 		JOIN referencedata.facilities AS facilities ON facilities.id = stock_cards.facilityid
 		join referencedata.facility_types AS facilities_types ON facilities_types.id = facilities.typeid
 		JOIN referencedata.geographic_zones AS zones ON zones.id = facilities.geographiczoneid
@@ -97,11 +106,9 @@ JOIN user_rights ur
     ON soh_data.programid = ur.programid
     and soh_data.facilityid = ur.facilityid
 WHERE soh_data.product_version_rank = 1
-GROUP BY soh_data.facilityName,
-	soh_data.productName,
+GROUP BY soh_data.productName,
 	soh_data.productId;]]>
 		</queryString>
-		<field name="facilityName" class="java.lang.String"/>
 		<field name="productId" class="java.lang.String"/>
 		<field name="productName" class="java.lang.String"/>
 		<field name="quantity" class="java.lang.Long"/>
@@ -423,7 +430,6 @@ GROUP BY
 				</categoryDataset>
 				<barPlot>
 					<plot/>
-					<itemLabel/>
 					<categoryAxisFormat>
 						<axisFormat/>
 					</categoryAxisFormat>

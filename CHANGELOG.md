@@ -1,6 +1,9 @@
 1.0.6 / wip
 ==================
 
+New functionality:
+* [SELV3-847](https://openlmis.atlassian.net/browse/SELV3-847): Added the EPI footer (number of volumes, number of ice packs, person responsible for packing, truck registration, trailer registration, security seal, exchange rate, total amount in USD and total amount in MZM) to the Proof of Delivery and Order reports.
+
 1.0.5 / 2025-02-20
 ==================
 

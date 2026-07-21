@@ -8,6 +8,12 @@
 	<import value="java.time.format.DateTimeFormatter"/>
 	<import value="java.text.DecimalFormat"/>
 	<import value="java.time.ZoneId"/>
+	<import value="java.math.BigDecimal"/>
+	<style name="epiFooterCell">
+		<box>
+			<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+		</box>
+	</style>
 	<parameter name="orderId" class="java.lang.String">
 		<property name="displayName" value="Proof of Delivery"/>
 	</parameter>
@@ -24,6 +30,7 @@
 		<property name="displayName" value="TimeZoneId"/>
 	</parameter>
 	<parameter name="imagesDirectory" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="twoDecimalFormat" class="java.text.DecimalFormat" isForPrompting="false"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT DISTINCT ON (orderProductName, productname, lotcode)
   program.name                         AS programName,
@@ -52,7 +59,15 @@
   lot.expirationdate 				   as expirationDate,
   po.priceperpack 					   as price,
   shipper.username 					   as shippedBy,
-  shipment.shippeddate 				   as shippedDate
+  shipment.shippeddate 				   as shippedDate,
+  ((ord.extradata ->> 'exchangeRate')::jsonb ->> 'rate')::numeric  AS exchangeRate,
+  shipment.extradata ->> 'volumesCount'        AS volumesCount,
+  shipment.extradata ->> 'icePacksCount'       AS icePacksCount,
+  shipment.extradata ->> 'packingPerson'       AS packingPerson,
+  shipment.extradata ->> 'truckRegistration'   AS truckRegistration,
+  shipment.extradata ->> 'trailerRegistration' AS trailerRegistration,
+  shipment.extradata ->> 'securitySeal'        AS securitySeal,
+  COALESCE(pod_li.quantityaccepted, shipment_li.quantityshipped) * po.priceperpack AS lineTotalUsd
 FROM
   fulfillment.proofs_of_delivery pod
   JOIN
@@ -167,7 +182,7 @@ FROM
 	on ti.id = pod_orderable_identifier.value::uuid
   LEFT JOIN
   referencedata.program_orderables po 
-    ON po.orderableid = orderable.id 
+    ON po.orderableid = orderable.id
 LEFT JOIN
   referencedata.orderables order_orderable
     ON order_orderable.id = order_li.orderableid
@@ -237,9 +252,17 @@ ORDER BY
 	<field name="manufacture" class="java.lang.String"/>
 	<field name="expirationDate" class="java.lang.String"/>
 	<field name="price" class="java.lang.Integer"/>
-	<variable name="total" class="java.lang.Integer" calculation="Sum">
-		<variableExpression><![CDATA[$F{price}]]></variableExpression>
-		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	<field name="exchangeRate" class="java.math.BigDecimal"/>
+	<field name="volumesCount" class="java.lang.String"/>
+	<field name="icePacksCount" class="java.lang.String"/>
+	<field name="packingPerson" class="java.lang.String"/>
+	<field name="truckRegistration" class="java.lang.String"/>
+	<field name="trailerRegistration" class="java.lang.String"/>
+	<field name="securitySeal" class="java.lang.String"/>
+	<field name="lineTotalUsd" class="java.math.BigDecimal"/>
+	<variable name="totalUsd" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{lineTotalUsd}]]></variableExpression>
+		<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
 	</variable>
 	<group name="OrderProductGroup">
 		<groupExpression><![CDATA[$F{orderProductName}]]></groupExpression>
@@ -774,21 +797,8 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 		</band>
 	</detail>
 	<summary>
-		<band height="103" splitType="Stretch">
+		<band height="235" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<frame>
-				<reportElement x="0" y="0" width="800" height="15" uuid="f78cc954-6bd8-4205-af31-18c791b5f5a3"/>
-				<textField>
-					<reportElement x="480" y="0" width="64" height="15" uuid="21576bd7-38f7-48b7-8716-1281f63399f8"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none"/>
-					<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="410" y="0" width="70" height="15" uuid="69f0c987-7686-4e14-8076-d1de145cf7f1"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[Custo total: ]]></text>
-				</staticText>
-			</frame>
 			<frame>
 				<reportElement x="0" y="31" width="800" height="40" uuid="9596ae5c-60b2-4bfd-a86a-dfb209b05b3b">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -979,6 +989,27 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</textElement>
 					<text><![CDATA[Data e Hora :]]></text>
 				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="130" width="800" height="95" uuid="a1110000-0000-0000-0000-000000000001"/>
+				<staticText><reportElement style="epiFooterCell" x="60" y="0" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000011"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Nº de Volumes]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="240" y="0" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000012"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{volumesCount}]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="60" y="15" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000021"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Nº de Acumuladores de Frio]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="240" y="15" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000022"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{icePacksCount}]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="60" y="30" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000031"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Responsável pelo Embalamento]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="240" y="30" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000032"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{packingPerson}]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="60" y="45" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000041"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Matrícula do Camião]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="240" y="45" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000042"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{truckRegistration}]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="60" y="60" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000051"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Matrícula do Reboque]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="240" y="60" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000052"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{trailerRegistration}]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="60" y="75" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000061"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Selo de Segurança]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="240" y="75" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000062"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{securitySeal}]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="420" y="0" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000071"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Taxa de Câmbio]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="600" y="0" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000072"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{exchangeRate} != null ? ($P{twoDecimalFormat}.format($F{exchangeRate}) + " MZM/USD") : ""]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="420" y="15" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000081"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (USD)]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="600" y="15" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000082"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$V{totalUsd} != null ? $P{twoDecimalFormat}.format($V{totalUsd}) : ""]]></textFieldExpression></textField>
+				<staticText><reportElement style="epiFooterCell" x="420" y="30" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000091"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (MZM)]]></text></staticText>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="600" y="30" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000092"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><textFieldExpression><![CDATA[($F{exchangeRate} != null && $V{totalUsd} != null) ? $P{twoDecimalFormat}.format($V{totalUsd}.multiply($F{exchangeRate})) : ""]]></textFieldExpression></textField>
 			</frame>
 		</band>
 	</summary>

@@ -89,6 +89,9 @@ public class JasperTemplateController extends BaseController {
   @Value("${groupingSize}")
   private String groupingSize;
 
+  @Value("${decimalSeparator}")
+  private String decimalSeparator;
+
   @Value("${time.zoneId}")
   private String timeZoneId;
 
@@ -216,6 +219,15 @@ public class JasperTemplateController extends BaseController {
     DecimalFormat decimalFormat = new DecimalFormat("", decimalFormatSymbols);
     decimalFormat.setGroupingSize(Integer.parseInt(groupingSize));
     map.put("decimalFormat", decimalFormat);
+    // SELV3-847: two-decimal money formatter for the PoD/Order report EPI footer (USD/MZM totals).
+    // It owns its symbols (grouping + decimal separator from config) so the existing reports that
+    // rely on `decimalFormat` stay byte-for-byte unchanged. Only PoD and order declare this param.
+    DecimalFormatSymbols moneyFormatSymbols = new DecimalFormatSymbols();
+    moneyFormatSymbols.setGroupingSeparator(groupingSeparator.charAt(0));
+    moneyFormatSymbols.setDecimalSeparator(decimalSeparator.charAt(0));
+    DecimalFormat twoDecimalFormat = new DecimalFormat("#,##0.00", moneyFormatSymbols);
+    twoDecimalFormat.setGroupingSize(Integer.parseInt(groupingSize));
+    map.put("twoDecimalFormat", twoDecimalFormat);
 
     UserDto currentUser = authenticationHelper.getCurrentUser();
     map.put("userId", currentUser.getId().toString());

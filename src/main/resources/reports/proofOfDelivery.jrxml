@@ -797,10 +797,10 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 		</band>
 	</detail>
 	<summary>
-		<band height="170" splitType="Stretch">
+		<band height="185" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="800" height="95" uuid="a1110000-0000-0000-0000-000000000001"/>
+				<reportElement x="0" y="15" width="800" height="95" uuid="a1110000-0000-0000-0000-000000000001"/>
 				<staticText><reportElement style="epiFooterCell" x="0" y="0" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000011"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Nº de Volumes]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="0" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000012"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{volumesCount}]]></textFieldExpression></textField>
 				<staticText><reportElement style="epiFooterCell" x="0" y="15" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000021"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Nº de Acumuladores de Frio]]></text></staticText>
@@ -821,7 +821,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="540" y="30" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000092"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><textFieldExpression><![CDATA[($F{exchangeRate} != null && $V{totalUsd} != null) ? $P{twoDecimalFormat}.format($V{totalUsd}.multiply($F{exchangeRate})) : ""]]></textFieldExpression></textField>
 			</frame>
 			<frame>
-				<reportElement x="0" y="100" width="800" height="70" uuid="9596ae5c-60b2-4bfd-a86a-dfb209b05b3b">
+				<reportElement x="0" y="115" width="800" height="70" uuid="9596ae5c-60b2-4bfd-a86a-dfb209b05b3b">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">

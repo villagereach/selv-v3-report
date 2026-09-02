@@ -776,10 +776,10 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 		</band>
 	</detail>
 	<summary>
-		<band height="180" splitType="Stretch">
+		<band height="195" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="320" height="50" uuid="b2220000-0000-0000-0000-000000000101"/>
+				<reportElement x="0" y="15" width="320" height="50" uuid="b2220000-0000-0000-0000-000000000101"/>
 				<staticText><reportElement style="epiFooterCell" x="0" y="0" width="180" height="15" uuid="b2220000-0000-0000-0000-000000000111"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Taxa de Câmbio]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="0" width="140" height="15" uuid="b2220000-0000-0000-0000-000000000112"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{exchangeRate} != null ? ($P{twoDecimalFormat}.format($F{exchangeRate}) + " MZM/USD") : ""]]></textFieldExpression></textField>
 				<staticText><reportElement style="epiFooterCell" x="0" y="15" width="180" height="15" uuid="b2220000-0000-0000-0000-000000000121"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (USD)]]></text></staticText>
@@ -788,7 +788,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="30" width="140" height="15" uuid="b2220000-0000-0000-0000-000000000132"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><textFieldExpression><![CDATA[($F{exchangeRate} != null && $V{totalUsd} != null) ? $P{twoDecimalFormat}.format($V{totalUsd}.multiply($F{exchangeRate})) : ""]]></textFieldExpression></textField>
 			</frame>
 			<componentElement>
-				<reportElement positionType="Float" x="0" y="55" width="700" height="40" uuid="b2220000-0000-0000-0000-000000000010"/>
+				<reportElement positionType="Float" x="0" y="70" width="700" height="40" uuid="b2220000-0000-0000-0000-000000000010"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
 					<datasetRun subDataset="shipmentInfo" uuid="b2220000-0000-0000-0000-000000000011">
 						<datasetParameter name="orderId">
@@ -827,7 +827,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				</jr:table>
 			</componentElement>
 			<frame>
-				<reportElement positionType="Float" x="0" y="110" width="800" height="70" uuid="5716d972-c388-4659-8744-91347e2dbd43">
+				<reportElement positionType="Float" x="0" y="125" width="800" height="70" uuid="5716d972-c388-4659-8744-91347e2dbd43">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">

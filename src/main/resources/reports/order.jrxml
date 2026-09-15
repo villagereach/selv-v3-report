@@ -826,7 +826,96 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</jr:column>
 				</jr:table>
 			</componentElement>
-			<frame><reportElement positionType="Float" x="0" y="117" width="800" height="38" uuid="5a1b0000-0000-0000-0000-000000000013"/><box><pen lineWidth="1.0" lineColor="#DDDDDD"/></box><staticText><reportElement x="8" y="4" width="72" height="14" uuid="5a1b0000-0000-0000-0000-000000000001"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Aviado Por:]]></text></staticText><textField isStretchWithOverflow="true" isBlankWhenNull="true"><reportElement x="84" y="4" width="168" height="14" uuid="5a1b0000-0000-0000-0000-000000000002"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{shippedBy}]]></textFieldExpression></textField><staticText><reportElement x="8" y="20" width="82" height="14" uuid="5a1b0000-0000-0000-0000-000000000003"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Data e Hora :]]></text></staticText><textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true"><reportElement x="92" y="20" width="165" height="14" uuid="5a1b0000-0000-0000-0000-000000000004"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{shippedDate}]]></textFieldExpression></textField><staticText><reportElement x="275" y="4" width="85" height="14" uuid="5a1b0000-0000-0000-0000-000000000005"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Recebido Por:]]></text></staticText><textField isStretchWithOverflow="true" isBlankWhenNull="true"><reportElement x="364" y="4" width="168" height="14" uuid="5a1b0000-0000-0000-0000-000000000006"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{receivedby}]]></textFieldExpression></textField><staticText><reportElement x="275" y="20" width="82" height="14" uuid="5a1b0000-0000-0000-0000-000000000007"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Data e Hora :]]></text></staticText><textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true"><reportElement x="359" y="20" width="165" height="14" uuid="5a1b0000-0000-0000-0000-000000000008"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{receiveddate}]]></textFieldExpression></textField><staticText><reportElement x="542" y="4" width="80" height="14" uuid="5a1b0000-0000-0000-0000-000000000009"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Entregue Por]]></text></staticText><textField isStretchWithOverflow="true" isBlankWhenNull="true"><reportElement x="626" y="4" width="168" height="14" uuid="5a1b0000-0000-0000-0000-000000000010"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{deliveredby}]]></textFieldExpression></textField><staticText><reportElement x="542" y="20" width="82" height="14" uuid="5a1b0000-0000-0000-0000-000000000011"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Data e Hora :]]></text></staticText><textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true"><reportElement x="626" y="20" width="165" height="14" uuid="5a1b0000-0000-0000-0000-000000000012"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{orderdate}]]></textFieldExpression></textField></frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="117" width="800" height="38" uuid="5a1b0000-0000-0000-0000-000000000013"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+				</box>
+				<staticText>
+					<reportElement x="8" y="4" width="72" height="14" uuid="5a1b0000-0000-0000-0000-000000000001"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Aviado Por:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="84" y="4" width="168" height="14" uuid="5a1b0000-0000-0000-0000-000000000002"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{shippedBy}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="8" y="20" width="82" height="14" uuid="5a1b0000-0000-0000-0000-000000000003"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data e Hora :]]></text>
+				</staticText>
+				<textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="92" y="20" width="165" height="14" uuid="5a1b0000-0000-0000-0000-000000000004"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{shippedDate}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="275" y="4" width="85" height="14" uuid="5a1b0000-0000-0000-0000-000000000005"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Recebido Por:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="364" y="4" width="168" height="14" uuid="5a1b0000-0000-0000-0000-000000000006"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{receivedby}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="275" y="20" width="82" height="14" uuid="5a1b0000-0000-0000-0000-000000000007"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data e Hora :]]></text>
+				</staticText>
+				<textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="359" y="20" width="165" height="14" uuid="5a1b0000-0000-0000-0000-000000000008"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{receiveddate}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="542" y="4" width="80" height="14" uuid="5a1b0000-0000-0000-0000-000000000009"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Entregue Por]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="626" y="4" width="168" height="14" uuid="5a1b0000-0000-0000-0000-000000000010"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{deliveredby}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="542" y="20" width="82" height="14" uuid="5a1b0000-0000-0000-0000-000000000011"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data e Hora :]]></text>
+				</staticText>
+				<textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="626" y="20" width="165" height="14" uuid="5a1b0000-0000-0000-0000-000000000012"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{orderdate}]]></textFieldExpression>
+				</textField>
+			</frame>
 		</band>
 	</summary>
 </jasperReport>

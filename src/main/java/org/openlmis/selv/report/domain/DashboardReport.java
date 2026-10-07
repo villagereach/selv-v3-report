@@ -24,6 +24,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,8 +43,11 @@ public class DashboardReport extends BaseEntity {
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION, nullable = false)
   private String name;
 
-  @Column(columnDefinition = TEXT_COLUMN_DEFINITION, nullable = false)
+  @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
   private String url;
+
+  @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  private String embeddedUuid;
 
   @Enumerated(EnumType.STRING)
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION, nullable = false)
@@ -63,12 +67,12 @@ public class DashboardReport extends BaseEntity {
   private String rightName;
 
   /**
-   * Create new instance of a Dashboard report based on data from {@link Importer}.
+   * Create new instance of a Dashboard report based on data from {@link DashboardReport.Importer}.
    *
-   * @param importer instance of {@link Importer}.
+   * @param importer instance of {@link DashboardReport.Importer}.
    * @return new instance of a dashboard report.
    */
-  public static DashboardReport newInstance(Importer importer) {
+  public static DashboardReport newInstance(DashboardReport.Importer importer) {
     DashboardReport dashboardReport = new DashboardReport();
     dashboardReport.setId(importer.getId());
     dashboardReport.updateFrom(importer);
@@ -81,9 +85,10 @@ public class DashboardReport extends BaseEntity {
    *
    * @param importer Dashboard report importer with new values.
    */
-  public void updateFrom(Importer importer) {
+  public void updateFrom(DashboardReport.Importer importer) {
     this.name = importer.getName();
     this.url = importer.getUrl();
+    this.embeddedUuid = importer.getEmbeddedUuid();
     this.type = importer.getType();
     this.enabled = importer.isEnabled();
     this.showOnHomePage = importer.isShowOnHomePage();
@@ -95,10 +100,11 @@ public class DashboardReport extends BaseEntity {
    *
    * @param exporter exporter to export to.
    */
-  public void export(Exporter exporter) {
+  public void export(DashboardReport.Exporter exporter) {
     exporter.setId(id);
     exporter.setName(name);
     exporter.setUrl(url);
+    exporter.setEmbeddedUuid(embeddedUuid);
     exporter.setType(type);
     exporter.setEnabled(enabled);
     exporter.setShowOnHomePage(showOnHomePage);
@@ -112,6 +118,8 @@ public class DashboardReport extends BaseEntity {
     void setName(String name);
 
     void setUrl(String url);
+
+    void setEmbeddedUuid(String embeddedUuid);
 
     void setType(ReportType type);
 
@@ -130,6 +138,8 @@ public class DashboardReport extends BaseEntity {
     String getName();
 
     String getUrl();
+
+    String getEmbeddedUuid();
 
     ReportType getType();
 

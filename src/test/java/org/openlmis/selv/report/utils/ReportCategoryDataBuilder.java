@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.databuilder;
+package org.openlmis.selv.report.utils;
 
 import java.util.UUID;
 import org.apache.commons.lang.RandomStringUtils;

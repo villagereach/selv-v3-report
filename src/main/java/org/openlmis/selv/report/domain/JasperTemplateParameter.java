@@ -45,47 +45,69 @@ import org.openlmis.selv.report.dto.JasperTemplateParameterDependencyDto;
  */
 @Entity
 @Table(name = "template_parameters")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class JasperTemplateParameter extends BaseEntity {
 
   @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "templateId", nullable = false)
+  @Getter
+  @Setter
   private JasperTemplate template;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String name;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String displayName;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String defaultValue;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String dataType;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String selectExpression;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String selectMethod;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String selectBody;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String selectProperty;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String displayProperty;
 
   @Column(columnDefinition = TEXT_COLUMN_DEFINITION)
+  @Getter
+  @Setter
   private String description;
 
   @ElementCollection
+  @Getter
+  @Setter
   private List<String> options;
 
   @OneToMany(
@@ -93,10 +115,19 @@ public class JasperTemplateParameter extends BaseEntity {
       cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE},
       fetch = FetchType.EAGER,
       orphanRemoval = true)
+  @Getter
+  @Setter
   private List<JasperTemplateParameterDependency> dependencies;
 
   @Column(nullable = false)
+  @Getter
+  @Setter
   private Boolean required;
+
+  @Column
+  @Getter
+  @Setter
+  private Integer displayOrder;
 
   /**
    * Create new instance of JasperTemplateParameter based on given {@link Importer}.
@@ -118,6 +149,7 @@ public class JasperTemplateParameter extends BaseEntity {
     jasperTemplateParameter.setSelectProperty(importer.getSelectProperty());
     jasperTemplateParameter.setDisplayProperty(importer.getDisplayProperty());
     jasperTemplateParameter.setRequired(importer.getRequired());
+    jasperTemplateParameter.setDisplayOrder(importer.getDisplayOrder());
     jasperTemplateParameter.setOptions(importer.getOptions());
     jasperTemplateParameter.setDependencies(importer.getDependencies()
         .stream()
@@ -145,6 +177,7 @@ public class JasperTemplateParameter extends BaseEntity {
     exporter.setSelectProperty(selectProperty);
     exporter.setDisplayProperty(displayProperty);
     exporter.setRequired(required);
+    exporter.setDisplayOrder(displayOrder);
     exporter.setOptions(options);
     exporter.setDependencies(dependencies
         .stream()
@@ -186,6 +219,8 @@ public class JasperTemplateParameter extends BaseEntity {
 
     void setRequired(Boolean required);
 
+    void setDisplayOrder(Integer displayOrder);
+
     void setOptions(List<String> options);
 
     void setDependencies(List<JasperTemplateParameterDependencyDto> dependencies);
@@ -215,6 +250,8 @@ public class JasperTemplateParameter extends BaseEntity {
     String getDisplayProperty();
 
     Boolean getRequired();
+
+    Integer getDisplayOrder();
 
     List<String> getOptions();
 

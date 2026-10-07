@@ -18,8 +18,8 @@ package org.openlmis.selv.report.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.openlmis.selv.report.databuilder.ReportCategoryDataBuilder;
 import org.openlmis.selv.report.dto.ReportCategoryDto;
+import org.openlmis.selv.report.utils.ReportCategoryDataBuilder;
 
 public class ReportCategoryTest {
 

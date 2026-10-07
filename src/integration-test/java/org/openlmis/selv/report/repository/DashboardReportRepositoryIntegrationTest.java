@@ -25,10 +25,10 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openlmis.selv.report.databuilder.DashboardReportDataBuilder;
-import org.openlmis.selv.report.databuilder.ReportCategoryDataBuilder;
 import org.openlmis.selv.report.domain.DashboardReport;
 import org.openlmis.selv.report.domain.ReportCategory;
+import org.openlmis.selv.report.utils.DashboardReportDataBuilder;
+import org.openlmis.selv.report.utils.ReportCategoryDataBuilder;
 import org.openlmis.selv.report.utils.ReportType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,15 +40,16 @@ public class DashboardReportRepositoryIntegrationTest extends
   private static final String NAME = "DashboardReportIntegrationTest";
   private static final String UPDATED_NAME = "UPDATED_DashboardReportIntegrationTest";
   private static final String URL = "http://example.com";
+  private static final String CATEGORY_NAME = "Default Category";
 
   @Autowired
   private DashboardReportRepository dashboardReportRepository;
 
   @Autowired
-  private ReportCategoryRepository reportCategoryRepository;
+  private JasperTemplateRepository jasperTemplateRepository;
 
   @Autowired
-  private JasperTemplateRepository jasperTemplateRepository;
+  private ReportCategoryRepository reportCategoryRepository;
 
   @Override
   DashboardReportRepository getRepository() {
@@ -87,7 +88,7 @@ public class DashboardReportRepositoryIntegrationTest extends
 
   @Test
   public void shouldFindAllDashboardReports() {
-    Pageable pageable = new PageRequest(0, 3);
+    Pageable pageable = PageRequest.of(0, 3);
     ReportCategory defaultCategory = reportCategoryRepository.save(
         new ReportCategoryDataBuilder().buildAsNew()
     );
@@ -121,16 +122,16 @@ public class DashboardReportRepositoryIntegrationTest extends
     );
 
     DashboardReport dashboardReport = new DashboardReportDataBuilder()
-        .buildAsNew();
-    dashboardReport.setCategory(defaultCategory);
+        .withCategory(defaultCategory)
+        .build();
 
     dashboardReportRepository.save(dashboardReport);
     dashboardReportRepository.delete(dashboardReport);
 
-    boolean dashboardReportExists = dashboardReportRepository.exists(dashboardReport.getId());
+    boolean dashboardReportExists = dashboardReportRepository.existsById(dashboardReport.getId());
     assertThat(dashboardReportExists, is(false));
 
-    boolean reportCategoryExists = reportCategoryRepository.exists(defaultCategory.getId());
+    boolean reportCategoryExists = reportCategoryRepository.existsById(defaultCategory.getId());
     assertThat(reportCategoryExists, is(true));
   }
 
@@ -148,7 +149,7 @@ public class DashboardReportRepositoryIntegrationTest extends
     assertThat(dashboardReport.getCategory().getId(), is(reportCategory.getId()));
 
     ReportCategory newReportCategory = reportCategoryRepository.save(
-            new ReportCategoryDataBuilder().buildAsNew()
+        new ReportCategoryDataBuilder().withName(CATEGORY_NAME).build()
     );
 
     dashboardReport.setName(UPDATED_NAME);
@@ -187,13 +188,15 @@ public class DashboardReportRepositoryIntegrationTest extends
 
   @Test
   public void shouldNotFindNonExistentDashboardReportByName() {
-    boolean exists = dashboardReportRepository.existsByName("Non-Existent name");
+    boolean exists = dashboardReportRepository
+        .existsByName("Non-Existent name");
+
     assertThat(exists, is(false));
   }
 
   @Test
   public void shouldFindOnlyEnabledDashboardReports() {
-    Pageable pageable = new PageRequest(0, 10);
+    Pageable pageable = PageRequest.of(0, 10);
     ReportCategory defaultCategory = reportCategoryRepository.save(
         new ReportCategoryDataBuilder().buildAsNew()
     );

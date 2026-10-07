@@ -16,6 +16,10 @@
 package org.openlmis.selv.report.exception;
 
 public class JasperReportViewException extends BaseLocalizedException {
+  public JasperReportViewException(String messageKey, String... params) {
+    super(messageKey, params);
+  }
+
   public JasperReportViewException(Throwable cause, String messageKey, String... params) {
     super(cause, messageKey, params);
   }

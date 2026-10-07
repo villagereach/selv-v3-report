@@ -25,6 +25,7 @@ import static org.openlmis.selv.report.i18n.ReportingMessageKeys.ERROR_REPORTING
 import static org.openlmis.selv.report.i18n.ReportingMessageKeys.ERROR_REPORTING_FILE_MISSING;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 import java.util.UUID;
 import org.junit.Rule;
@@ -37,7 +38,6 @@ import org.mockito.Mock;
 import org.openlmis.selv.report.domain.ReportImage;
 import org.openlmis.selv.report.exception.ReportingException;
 import org.openlmis.selv.report.repository.ReportImageRepository;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
@@ -91,7 +91,7 @@ public class ReportImageServiceTest {
   }
 
   private ReportImage testSaveImage(String name) throws ReportingException {
-    ReportImageService service = PowerMockito.spy(reportImageService);
+    ReportImageService service = spy(reportImageService);
     MultipartFile file = mock(MultipartFile.class);
 
     // validating and saving file is checked by other tests

@@ -1,6 +1,6 @@
 /*
  * This program is part of the OpenLMIS logistics management information system platform software.
- * Copyright © 2017 VillageReach
+ * Copyright © 2020 VillageReach
  *
  * This program is free software: you can redistribute it and/or modify it under the terms
  * of the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -15,24 +15,15 @@
 
 package org.openlmis.selv.report.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+public class JasperXlsExporterTest extends BaseJasperExporterTest {
 
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.export.HtmlExporter;
-import org.junit.Test;
-
-public class JasperReportsHtmlViewTest {
-
-  private JasperReportsHtmlView jasperReportsHtmlView = new JasperReportsHtmlView();
-
-  @Test
-  public void shouldReturnInstanceOfHtmlExporter() {
-    JRExporter jrExporter = jasperReportsHtmlView.createExporter();
-
-    // We make sure to use HtmlExporter over deprecated and removed JrHtmlExporter
-    assertTrue(jrExporter instanceof HtmlExporter);
-    assertEquals("text/html", jasperReportsHtmlView.getContentType());
+  @Override
+  protected JasperExporter getExporter() {
+    return new JasperXlsExporter(jasperPrint);
   }
 
+  @Override
+  protected String getReportFormat() {
+    return "xls";
+  }
 }

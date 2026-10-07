@@ -48,8 +48,8 @@ public class ReportCategoryService {
    */
   @Autowired
   public ReportCategoryService(ReportCategoryRepository reportCategoryRepository,
-       PermissionService permissionService, DashboardReportRepository dashboardReportRepository,
-       JasperTemplateRepository jasperTemplateRepository) {
+      PermissionService permissionService, DashboardReportRepository dashboardReportRepository,
+      JasperTemplateRepository jasperTemplateRepository) {
     this.reportCategoryRepository = reportCategoryRepository;
     this.dashboardReportRepository = dashboardReportRepository;
     this.jasperTemplateRepository = jasperTemplateRepository;
@@ -67,8 +67,7 @@ public class ReportCategoryService {
     Optional<ReportCategory> reportCategory = reportCategoryRepository.findById(categoryId);
 
     if (!reportCategory.isPresent()) {
-      throw new NotFoundMessageException(new Message(
-        ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NOT_FOUND));
+      throw new NotFoundMessageException(ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NOT_FOUND);
     }
 
     return ReportCategoryDto.newInstance(reportCategory.get());
@@ -119,7 +118,7 @@ public class ReportCategoryService {
     boolean nameAlreadyExists = reportCategoryRepository.existsByIdIsNotAndName(id, dto.getName());
     if (nameAlreadyExists) {
       throw new ValidationMessageException(
-          new Message(ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NAME_DUPLICATED));
+        new Message(ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NAME_DUPLICATED));
     }
 
     ReportCategory existingCategory = reportCategoryRepository.findById(id)
@@ -143,7 +142,7 @@ public class ReportCategoryService {
 
     if (isAssignedToReports || isAssignedToTemplates) {
       throw new ValidationMessageException(new Message(
-          ReportCategoryMessageKeys.ERROR_CATEGORY_ALREADY_ASSIGNED, categoryId));
+        ReportCategoryMessageKeys.ERROR_CATEGORY_ALREADY_ASSIGNED, categoryId));
     }
 
     ReportCategory reportCategory = reportCategoryRepository.findById(categoryId)

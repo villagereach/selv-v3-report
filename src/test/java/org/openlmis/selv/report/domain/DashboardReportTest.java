@@ -18,8 +18,8 @@ package org.openlmis.selv.report.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.openlmis.selv.report.databuilder.DashboardReportDataBuilder;
 import org.openlmis.selv.report.dto.DashboardReportDto;
+import org.openlmis.selv.report.utils.DashboardReportDataBuilder;
 
 public class DashboardReportTest {
   @Test

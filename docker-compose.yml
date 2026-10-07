@@ -9,7 +9,7 @@ services:
     env_file: .env
 
   db:
-    image: openlmis/postgres:9.6
+    image: openlmis/postgres:12-debezium
     logging:
       driver: syslog
       options:
@@ -19,7 +19,7 @@ services:
     env_file: .env
 
   log:
-    image: openlmis/rsyslog:1
+    image: openlmis/rsyslog:3
     ports:
       - "514:514"
     volumes:

@@ -1,16 +1,18 @@
 *.iml
 *.ipr
 *.iws
-gradlew*
 .env
-
 out/
 build/
-gradle/
 node_modules/
 .tx/
 .idea/
 .gradle/
 
+# Translations pulled from Transifex during the build (see build.sh); only the
+# English source files are tracked in git.
+src/main/resources/messages_*.properties
+!src/main/resources/messages_en.properties
+src/main/resources/resourceBundles/report_translations_*.properties
 src/main/resources/reports/*.jasper
 src/main/resources/reports/*.jasper.hex

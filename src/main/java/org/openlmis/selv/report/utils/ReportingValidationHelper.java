@@ -28,7 +28,7 @@ public final class ReportingValidationHelper {
   /**
    * Throws exception if file is empty.
    * @param file The file to check
-   * @throws org.openlmis.selv.report.exception.ReportingException thrown when file is empty
+   * @throws ReportingException thrown when file is empty
    */
   public static void throwIfFileIsEmpty(MultipartFile file) throws ReportingException {
     if (file.isEmpty()) {

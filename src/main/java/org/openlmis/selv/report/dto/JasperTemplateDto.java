@@ -24,15 +24,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.openlmis.selv.report.domain.JasperTemplate;
-import org.openlmis.selv.report.domain.JasperTemplate.Exporter;
 import org.openlmis.selv.report.domain.JasperTemplateParameter;
 import org.openlmis.selv.report.domain.ReportCategory;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class JasperTemplateDto implements Exporter {
+@AllArgsConstructor
+@NoArgsConstructor
+public class JasperTemplateDto implements JasperTemplate.Exporter {
 
   private UUID id;
   private String name;

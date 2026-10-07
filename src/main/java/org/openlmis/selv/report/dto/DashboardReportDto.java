@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ import org.openlmis.selv.report.domain.DashboardReport;
 import org.openlmis.selv.report.domain.DashboardReport.Exporter;
 import org.openlmis.selv.report.domain.DashboardReport.Importer;
 import org.openlmis.selv.report.domain.ReportCategory;
+
 import org.openlmis.selv.report.utils.ReportType;
 
 @Getter
@@ -37,6 +39,7 @@ public class DashboardReportDto implements Importer, Exporter {
   private UUID id;
   private String name;
   private String url;
+  private String embeddedUuid;
   private ReportType type;
   private boolean enabled;
   private boolean showOnHomePage;

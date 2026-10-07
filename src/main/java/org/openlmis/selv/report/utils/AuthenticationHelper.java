@@ -15,11 +15,13 @@
 
 package org.openlmis.selv.report.utils;
 
+import static org.openlmis.selv.report.i18n.AuthorizationMessageKeys.ERROR_RIGHT_NOT_FOUND;
+import static org.openlmis.selv.report.i18n.AuthorizationMessageKeys.ERROR_USER_NOT_FOUND;
+
 import java.util.UUID;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.dto.external.referencedata.UserDto;
 import org.openlmis.selv.report.exception.AuthenticationMessageException;
-import org.openlmis.selv.report.i18n.AuthorizationMessageKeys;
 import org.openlmis.selv.report.service.referencedata.RightReferenceDataService;
 import org.openlmis.selv.report.service.referencedata.UserReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +49,7 @@ public class AuthenticationHelper {
     UserDto user = userReferenceDataService.findOne(userId);
 
     if (user == null) {
-      throw new AuthenticationMessageException(new Message(
-          AuthorizationMessageKeys.ERROR_USER_NOT_FOUND, userId));
+      throw new AuthenticationMessageException(new Message(ERROR_USER_NOT_FOUND, userId));
     }
 
     return user;
@@ -65,8 +66,7 @@ public class AuthenticationHelper {
     RightDto right = rightReferenceDataService.findRight(name);
 
     if (null == right) {
-      throw new AuthenticationMessageException(new Message(
-          AuthorizationMessageKeys.ERROR_RIGHT_NOT_FOUND, name));
+      throw new AuthenticationMessageException(new Message(ERROR_RIGHT_NOT_FOUND, name));
     }
 
     return right;

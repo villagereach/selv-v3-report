@@ -25,10 +25,10 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openlmis.selv.report.databuilder.DashboardReportDataBuilder;
-import org.openlmis.selv.report.databuilder.ReportCategoryDataBuilder;
 import org.openlmis.selv.report.domain.JasperTemplate;
 import org.openlmis.selv.report.domain.ReportCategory;
+import org.openlmis.selv.report.utils.DashboardReportDataBuilder;
+import org.openlmis.selv.report.utils.ReportCategoryDataBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,11 +76,6 @@ public class ReportCategoryRepositoryIntegrationTest extends
 
   @Test
   public void shouldFindAllReportCategories() {
-    // Clear all the data
-    jasperTemplateRepository.deleteAll();
-    dashboardReportRepository.deleteAll();
-    reportCategoryRepository.deleteAll();
-
     ReportCategory reportCategory1 = reportCategoryRepository.save(
         new ReportCategoryDataBuilder().buildAsNew()
     );
@@ -91,7 +86,7 @@ public class ReportCategoryRepositoryIntegrationTest extends
     reportCategoryRepository.save(reportCategory1);
     reportCategoryRepository.save(reportCategory2);
 
-    Pageable pageable = new PageRequest(0, 2);
+    Pageable pageable = PageRequest.of(0, 2);
     Page<ReportCategory> page = reportCategoryRepository.findAll(pageable);
     List<ReportCategory> found = page.getContent();
 
@@ -105,7 +100,7 @@ public class ReportCategoryRepositoryIntegrationTest extends
         new ReportCategoryDataBuilder().buildAsNew()
     );
 
-    reportCategoryRepository.delete(reportCategory.getId());
+    reportCategoryRepository.deleteById(reportCategory.getId());
 
     Optional<ReportCategory> foundCategory = reportCategoryRepository.findById(
         reportCategory.getId());

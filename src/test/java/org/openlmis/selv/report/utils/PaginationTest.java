@@ -20,19 +20,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PaginationTest {
 
   @Test
   public void getPageReturnsTheCorrectPage() {
     int page = 1;
     int size = 3;
-    PageRequest pageRequest = new PageRequest(page, size);
+    PageRequest pageRequest = PageRequest.of(page, size);
 
     Page<Integer> pagedList = Pagination.getPage(getList(), pageRequest);
 
@@ -50,7 +50,7 @@ public class PaginationTest {
   public void getPageReturnsEmptyResultIfSpecifiedPageNumberIsOutOfBounds() {
     int page = Integer.MAX_VALUE;
     int size = 5;
-    PageRequest pageRequest = new PageRequest(page, size);
+    PageRequest pageRequest = PageRequest.of(page, size);
 
     Page<Integer> pagedList = Pagination.getPage(getList(), pageRequest);
 
@@ -63,7 +63,7 @@ public class PaginationTest {
   public void getPageReturnsAllValuesEvenWhenSizeIsOutOfBounds() {
     int page = 0;
     int size = Integer.MAX_VALUE;
-    PageRequest pageRequest = new PageRequest(page, size);
+    PageRequest pageRequest = PageRequest.of(page, size);
 
     Page<Integer> pagedList = Pagination.getPage(getList(), pageRequest);
 
@@ -75,7 +75,7 @@ public class PaginationTest {
   public void getPageReturnsSomeValuesEvenWhenSizeIsOutOfBounds() {
     int page = 1;
     int size = 7;
-    PageRequest pageRequest = new PageRequest(page, size);
+    PageRequest pageRequest = PageRequest.of(page, size);
 
     Page<Integer> pagedList = Pagination.getPage(getList(), pageRequest);
 
@@ -89,20 +89,19 @@ public class PaginationTest {
   }
 
   private List<Integer> getList() {
-    List<Integer> values = new ArrayList<Integer>() {{
-        add(new Integer(0));
-        add(new Integer(1));
-        add(new Integer(2));
-        add(new Integer(3));
-        add(new Integer(4));
-        add(new Integer(5));
-        add(new Integer(6));
-        add(new Integer(7));
-        add(new Integer(8));
-        add(new Integer(9));
+    return new ArrayList<Integer>() {{
+        add(0);
+        add(1);
+        add(2);
+        add(3);
+        add(4);
+        add(5);
+        add(6);
+        add(7);
+        add(8);
+        add(9);
       }
     };
-    return values;
   }
 
 }

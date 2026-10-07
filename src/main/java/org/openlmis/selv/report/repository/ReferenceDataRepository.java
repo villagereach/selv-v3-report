@@ -30,10 +30,10 @@ public interface ReferenceDataRepository<T, IDT extends Serializable>
   void delete(T entity);
 
   @Override
-  void delete(IDT id);
+  void deleteById(IDT id);
 
   @Override
-  void delete(Iterable<? extends T> entities);
+  void deleteAll(Iterable<? extends T> entities);
 
   @Override
   void deleteAll();
@@ -42,5 +42,5 @@ public interface ReferenceDataRepository<T, IDT extends Serializable>
   <S extends T> S save(S entity);
 
   @Override
-  <S extends T> Iterable<S> save(Iterable<S> entities);
+  <S extends T> Iterable<S> saveAll(Iterable<S> entities);
 }

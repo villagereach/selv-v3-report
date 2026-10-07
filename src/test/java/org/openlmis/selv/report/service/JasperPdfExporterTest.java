@@ -1,6 +1,6 @@
 /*
  * This program is part of the OpenLMIS logistics management information system platform software.
- * Copyright © 2017 VillageReach
+ * Copyright © 2020 VillageReach
  *
  * This program is free software: you can redistribute it and/or modify it under the terms
  * of the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -15,33 +15,15 @@
 
 package org.openlmis.selv.report.service;
 
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.export.HtmlExporter;
-import org.springframework.web.servlet.view.jasperreports.AbstractJasperReportsSingleFormatView;
+public class JasperPdfExporterTest extends BaseJasperExporterTest {
 
-/**
- * Implementation of {@code AbstractJasperReportsSingleFormatView}
- * that renders report results in HTML format.
- *
- * <p>This is an equivalent of the Spring class that creates Jasper HTML exporter, that doesn't use
- * JRHtmlExporter removed in Jasper 6.4.3.
- */
-@SuppressWarnings("deprecation")
-public class JasperReportsHtmlView extends AbstractJasperReportsSingleFormatView {
-
-  public JasperReportsHtmlView() {
-    setContentType("text/html");
+  @Override
+  protected JasperExporter getExporter() {
+    return new JasperPdfExporter(jasperPrint);
   }
 
   @Override
-  protected JRExporter createExporter() {
-    // Use HtmlExporter over deprecated and removed JRHtmlExporter
-    return new HtmlExporter();
+  protected String getReportFormat() {
+    return "pdf";
   }
-
-  @Override
-  protected boolean useWriter() {
-    return true;
-  }
-
 }

@@ -15,8 +15,11 @@
 
 package org.openlmis.selv.report.web;
 
+import static org.openlmis.selv.report.web.ReportCategoryController.RESOURCE_PATH;
+
 import java.util.UUID;
 import javax.validation.Valid;
+
 import org.openlmis.selv.report.dto.ReportCategoryDto;
 import org.openlmis.selv.report.service.ReportCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 @Transactional
-@RequestMapping(ReportCategoryController.RESOURCE_PATH)
+@RequestMapping(RESOURCE_PATH)
 public class ReportCategoryController extends BaseController {
 
   public static final String RESOURCE_PATH = "/api/reports/reportCategories";

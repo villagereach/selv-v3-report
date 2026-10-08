@@ -12,6 +12,7 @@ services:
       - './build.sh'
     environment:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+      TRANSIFEX_PUSH: 'false'
     env_file: .env
 
   demo-data:

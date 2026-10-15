@@ -7,6 +7,7 @@ New functionality:
   * Exposed Prometheus metrics at `/actuator/prometheus` and the health check used by Consul; a failing health check never removes the service from Consul ([SELV3-891](https://openlmis.atlassian.net/browse/SELV3-891))
   * Printouts keep their current look on the new base image: text is laid out with Liberation Sans
     (same widths as the Helvetica the PDFs use), so labels and product names are no longer cut
+  * Requisition print works again with templates from requisition 8.6.0+, which carry the supplying facility stock on hand column (SUPPLYING_FACILITY_STOCK source)
 * [SELV3-847](https://openlmis.atlassian.net/browse/SELV3-847): Added the EPI footer (number of volumes, number of ice packs, person responsible for packing, truck registration, trailer registration, security seal, exchange rate, total amount in USD and total amount in MZM) to the Proof of Delivery and Order reports.
 
 1.0.5 / 2025-02-20

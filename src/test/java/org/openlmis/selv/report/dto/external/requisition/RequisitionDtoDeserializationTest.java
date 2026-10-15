@@ -42,6 +42,8 @@ public class RequisitionDtoDeserializationTest {
     RequisitionTemplateColumnDto column = requisition.getTemplate().getColumnsMap()
         .get("requestedQuantity");
     assertEquals("requestedQuantity", column.getName());
+    assertEquals(SourceType.SUPPLYING_FACILITY_STOCK, requisition.getTemplate().getColumnsMap()
+        .get("supplyingFacilityStockOnHand").getSource());
     assertFalse(requisition.getRequisitionLineItems().isEmpty());
   }
 }

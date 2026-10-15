@@ -431,6 +431,21 @@
           "columnType": "TEXT"
         }
       },
+      "supplyingFacilityStockOnHand": {
+        "name": "supplyingFacilityStockOnHand",
+        "label": "Supplying facility stock on hand",
+        "indicator": "SF",
+        "displayOrder": 33,
+        "isDisplayed": false,
+        "source": "SUPPLYING_FACILITY_STOCK",
+        "option": null,
+        "definition": "Stock on hand at the supplying facility for this product, displayed during approval",
+        "tag": null,
+        "columnDefinition": {
+          "canChangeOrder": true,
+          "columnType": "NUMERIC"
+        }
+      },
       "totalCost": {
         "name": "totalCost",
         "label": "Total cost",

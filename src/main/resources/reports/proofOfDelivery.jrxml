@@ -251,7 +251,7 @@ ORDER BY
 	<field name="vvmstatus" class="java.lang.String"/>
 	<field name="manufacture" class="java.lang.String"/>
 	<field name="expirationDate" class="java.lang.String"/>
-	<field name="price" class="java.lang.Integer"/>
+	<field name="price" class="java.math.BigDecimal"/>
 	<field name="exchangeRate" class="java.math.BigDecimal"/>
 	<field name="volumesCount" class="java.lang.String"/>
 	<field name="icePacksCount" class="java.lang.String"/>
@@ -779,7 +779,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{price} != null ? $P{twoDecimalFormat}.format($F{price}) : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="480" y="0" width="64" height="20" backcolor="#FFFFFF" uuid="95531a59-2649-41f2-b04d-3934502f7406">

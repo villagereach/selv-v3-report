@@ -121,9 +121,6 @@ FROM
   left JOIN
   referencedata.facilities requesting_facility
     ON requesting_facility.id = ord.requestingfacilityid
-  left JOIN
-  fulfillment.proof_of_delivery_line_items pod_li
-    ON pod_li.proofofdeliveryid = pod.id
   LEFT JOIN
   fulfillment.order_line_items order_li
     ON order_li.orderid = ord.id
@@ -137,6 +134,12 @@ FROM
     ON shipment_li.shipmentid = shipment.id
        AND order_li.orderableid = shipment_li.orderableid
        AND order_li.orderableversionnumber = shipment_li.orderableversionnumber
+  LEFT JOIN
+  fulfillment.proof_of_delivery_line_items pod_li
+    ON pod_li.proofofdeliveryid = pod.id
+       AND pod_li.orderableid = shipment_li.orderableid
+       AND pod_li.orderableversionnumber = shipment_li.orderableversionnumber
+       AND ((pod_li.lotid IS NULL AND shipment_li.lotid IS NULL) OR pod_li.lotid = shipment_li.lotid)
   left JOIN
   referencedata.dispensables dispensable
     ON dispensable.id = orderable.dispensableid
@@ -164,6 +167,8 @@ FROM
   LEFT JOIN
   referencedata.program_orderables po
     ON po.orderableid = orderable.id
+       AND po.orderableversionnumber = orderable.versionnumber
+       AND po.programid = ord.programid
 where
   ord.id = $P{orderId}::uuid
   and (order_li.orderedquantity > 0 or shipment_li.quantityshipped > 0)

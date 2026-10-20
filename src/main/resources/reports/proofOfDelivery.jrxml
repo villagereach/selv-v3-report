@@ -181,8 +181,10 @@ FROM
   referencedata.trade_items ti
 	on ti.id = pod_orderable_identifier.value::uuid
   LEFT JOIN
-  referencedata.program_orderables po 
+  referencedata.program_orderables po
     ON po.orderableid = orderable.id
+       AND po.orderableversionnumber = orderable.versionnumber
+       AND po.programid = ord.programid
 LEFT JOIN
   referencedata.orderables order_orderable
     ON order_orderable.id = order_li.orderableid

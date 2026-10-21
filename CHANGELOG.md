@@ -9,7 +9,8 @@ New functionality:
     (same widths as the Helvetica the PDFs use), so labels and product names are no longer cut
   * Requisition print works again with templates from requisition 8.6.0+, which carry the supplying facility stock on hand column (SUPPLYING_FACILITY_STOCK source)
 * [SELV3-847](https://openlmis.atlassian.net/browse/SELV3-847): Added the EPI footer (number of volumes, number of ice packs, person responsible for packing, truck registration, trailer registration, security seal, exchange rate, total amount in USD and total amount in MZM) to the Proof of Delivery and Order reports.
-  * Unit prices on the Order and Proof of Delivery prints are shown with two decimals instead of being truncated to whole numbers, so the lines add up to the USD total; the "Selo de Segurança" footer header on the Order print no longer gets cut to "Selo de"
+  * Unit prices on the Order and Proof of Delivery prints are no longer truncated to whole numbers (the price per dose shows two to four decimals); the "Selo de Segurança" footer header on the Order print no longer gets cut to "Selo de"
+  * The Order and Proof of Delivery prints show the price per dose under "Por dose" (they showed the price per pack) and fill the line "Total", so the lines add up to the total amount in USD. The Proof of Delivery print shows quantities in doses, like the Order print, and its cost header reads "Custo (USD)" instead of "Custo (MT)"
   * The Order and Proof of Delivery prints now show the same USD total for the same order. The Order print matches each Proof of Delivery line to its own product and lot (before, the accepted quantity and total could come from another line of the same delivery), and both prints take the unit price of the ordered product version in the order's program (before, any version or program could be picked)
 
 1.0.5 / 2025-02-20

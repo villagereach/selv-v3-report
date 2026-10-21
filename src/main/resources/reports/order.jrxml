@@ -88,6 +88,7 @@ ORDER BY s.shippeddate]]>
   ti.manufactureroftradeitem   		   as manufacture,
   lot.expirationdate 				   as expirationDate,
   po.priceperpack 					   as price,
+  po.priceperpack / NULLIF(orderable.netcontent, 0) AS pricePerDose,
   concat_ws(' ', shipper.firstname, shipper.lastname)
   									   as shippedBy,
   shipment.shippeddate 				   as shippedDate,
@@ -238,6 +239,7 @@ ORDER BY
 	<field name="manufacture" class="java.lang.String"/>
 	<field name="expirationDate" class="java.util.Date"/>
 	<field name="price" class="java.math.BigDecimal"/>
+	<field name="pricePerDose" class="java.math.BigDecimal"/>
 	<field name="shippedBy" class="java.lang.String"/>
 	<field name="shippedDate" class="java.util.Date"/>
 	<field name="facility" class="java.lang.String"/>
@@ -763,7 +765,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{price} != null ? $P{twoDecimalFormat}.format($F{price}) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{pricePerDose} != null ? new DecimalFormat("#,##0.00##", $P{twoDecimalFormat}.getDecimalFormatSymbols()).format($F{pricePerDose}) : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="480" y="0" width="64" height="20" backcolor="#FFFFFF" uuid="95531a59-2649-41f2-b04d-3934502f7406">
@@ -777,6 +779,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lineTotalUsd} != null ? $P{twoDecimalFormat}.format($F{lineTotalUsd}) : ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

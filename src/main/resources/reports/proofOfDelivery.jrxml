@@ -58,7 +58,8 @@
   ti.manufactureroftradeitem   		   as manufacture,
   lot.expirationdate 				   as expirationDate,
   po.priceperpack 					   as price,
-  shipper.username 					   as shippedBy,
+  po.priceperpack / NULLIF(orderable.netcontent, 0) AS pricePerDose,
+  concat_ws(' ', shipper.firstname, shipper.lastname) AS shippedBy,
   shipment.shippeddate 				   as shippedDate,
   ((ord.extradata ->> 'exchangeRate')::jsonb ->> 'rate')::numeric  AS exchangeRate,
   shipment.extradata ->> 'volumesCount'        AS volumesCount,
@@ -67,7 +68,7 @@
   shipment.extradata ->> 'truckRegistration'   AS truckRegistration,
   shipment.extradata ->> 'trailerRegistration' AS trailerRegistration,
   shipment.extradata ->> 'securitySeal'        AS securitySeal,
-  COALESCE(pod_li.quantityaccepted, shipment_li.quantityshipped) * po.priceperpack AS lineTotalUsd
+  shipment_li.quantityshipped * po.priceperpack AS lineTotalUsd
 FROM
   fulfillment.proofs_of_delivery pod
   JOIN
@@ -254,6 +255,7 @@ ORDER BY
 	<field name="manufacture" class="java.lang.String"/>
 	<field name="expirationDate" class="java.lang.String"/>
 	<field name="price" class="java.math.BigDecimal"/>
+	<field name="pricePerDose" class="java.math.BigDecimal"/>
 	<field name="exchangeRate" class="java.math.BigDecimal"/>
 	<field name="volumesCount" class="java.lang.String"/>
 	<field name="icePacksCount" class="java.lang.String"/>
@@ -613,7 +615,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Custo (MT)]]></text>
+				<text><![CDATA[Custo (USD)]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="480" y="20" width="64" height="22" forecolor="#000000" backcolor="#FFFFFF" uuid="725523eb-9ad5-4ff6-ae7b-598833fa3529">
@@ -781,7 +783,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{price} != null ? $P{twoDecimalFormat}.format($F{price}) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{pricePerDose} != null ? new DecimalFormat("#,##0.00##", $P{twoDecimalFormat}.getDecimalFormatSymbols()).format($F{pricePerDose}) : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="480" y="0" width="64" height="20" backcolor="#FFFFFF" uuid="95531a59-2649-41f2-b04d-3934502f7406">
@@ -795,6 +797,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lineTotalUsd} != null ? $P{twoDecimalFormat}.format($F{lineTotalUsd}) : ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -816,10 +819,10 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<staticText><reportElement style="epiFooterCell" x="0" y="75" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000061"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Selo de Segurança]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="75" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000062"/><textElement verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{securitySeal}]]></textFieldExpression></textField>
 				<staticText><reportElement style="epiFooterCell" x="360" y="0" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000071"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Taxa de Câmbio]]></text></staticText>
-				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="540" y="0" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000072"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{exchangeRate} != null ? ($P{twoDecimalFormat}.format($F{exchangeRate}) + " MZM/USD") : ""]]></textFieldExpression></textField>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="540" y="0" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000072"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{exchangeRate} != null ? ($P{twoDecimalFormat}.format($F{exchangeRate}) + " MZN/USD") : ""]]></textFieldExpression></textField>
 				<staticText><reportElement style="epiFooterCell" x="360" y="15" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000081"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (USD)]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="540" y="15" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000082"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$V{totalUsd} != null ? $P{twoDecimalFormat}.format($V{totalUsd}) : ""]]></textFieldExpression></textField>
-				<staticText><reportElement style="epiFooterCell" x="360" y="30" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000091"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (MZM)]]></text></staticText>
+				<staticText><reportElement style="epiFooterCell" x="360" y="30" width="180" height="15" uuid="a1110000-0000-0000-0000-000000000091"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (MZN)]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="540" y="30" width="140" height="15" uuid="a1110000-0000-0000-0000-000000000092"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><textFieldExpression><![CDATA[($F{exchangeRate} != null && $V{totalUsd} != null) ? $P{twoDecimalFormat}.format($V{totalUsd}.multiply($F{exchangeRate})) : ""]]></textFieldExpression></textField>
 			</frame>
 			<frame>

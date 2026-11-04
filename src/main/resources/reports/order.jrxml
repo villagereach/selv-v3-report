@@ -70,15 +70,15 @@ ORDER BY s.shippeddate]]>
   orderable.fullproductname            AS productName,
   COALESCE(NULLIF(Concat_ws(',', size_code.value, route_of_administration.value),
            ''), dispensing_unit.value) AS productUnit,
-  (order_li.orderedquantity*orderable.netcontent)
+  order_li.orderedquantity
   									   AS quantityOrdered,
-  (shipment_li.quantityshipped*orderable.netcontent)
+  shipment_li.quantityshipped
   									   AS quantityShipped,
   lot.lotcode                          AS lotCode,
-  (pod_li.quantityaccepted*orderable.netcontent)
+  pod_li.quantityaccepted
   									   AS quantityAccepted,
   pod_li.vvmstatus                     AS vvmStatus,
-  (pod_li.quantityrejected*orderable.netcontent)
+  pod_li.quantityrejected
   									   AS quantityReturned,
   rejection_reason.name                AS rejectionReason,
   pod_li.notes                         AS notes,
@@ -88,11 +88,12 @@ ORDER BY s.shippeddate]]>
   ti.manufactureroftradeitem   		   as manufacture,
   lot.expirationdate 				   as expirationDate,
   po.priceperpack 					   as price,
+  po.priceperpack / NULLIF(COALESCE(shipped_orderable.netcontent, orderable.netcontent), 0) AS pricePerDose,
   concat_ws(' ', shipper.firstname, shipper.lastname)
   									   as shippedBy,
   shipment.shippeddate 				   as shippedDate,
   ((ord.extradata ->> 'exchangeRate')::jsonb ->> 'rate')::numeric  AS exchangeRate,
-  COALESCE(pod_li.quantityaccepted, shipment_li.quantityshipped) * po.priceperpack AS lineTotalUsd
+  shipment_li.quantityshipped * po.priceperpack AS lineTotalUsd
 FROM
   fulfillment.orders ord
   left JOIN
@@ -133,7 +134,10 @@ FROM
   fulfillment.shipment_line_items shipment_li
     ON shipment_li.shipmentid = shipment.id
        AND order_li.orderableid = shipment_li.orderableid
-       AND order_li.orderableversionnumber = shipment_li.orderableversionnumber
+  LEFT JOIN
+  referencedata.orderables shipped_orderable
+    ON shipped_orderable.id = shipment_li.orderableid
+       AND shipped_orderable.versionnumber = shipment_li.orderableversionnumber
   LEFT JOIN
   fulfillment.proof_of_delivery_line_items pod_li
     ON pod_li.proofofdeliveryid = pod.id
@@ -167,7 +171,7 @@ FROM
   LEFT JOIN
   referencedata.program_orderables po
     ON po.orderableid = orderable.id
-       AND po.orderableversionnumber = orderable.versionnumber
+       AND po.orderableversionnumber = COALESCE(shipment_li.orderableversionnumber, orderable.versionnumber)
        AND po.programid = ord.programid
 where
   ord.id = $P{orderId}::uuid
@@ -238,6 +242,7 @@ ORDER BY
 	<field name="manufacture" class="java.lang.String"/>
 	<field name="expirationDate" class="java.util.Date"/>
 	<field name="price" class="java.math.BigDecimal"/>
+	<field name="pricePerDose" class="java.math.BigDecimal"/>
 	<field name="shippedBy" class="java.lang.String"/>
 	<field name="shippedDate" class="java.util.Date"/>
 	<field name="facility" class="java.lang.String"/>
@@ -669,7 +674,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 				<textElement verticalAlignment="Middle" markup="html"/>
 				<textFieldExpression><![CDATA[($F{rejectionreason}!=null?$F{rejectionreason}:"")+(($F{notes}!=null)?"<br> ("+$F{notes}+")":"")]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="620" y="0" width="80" height="20" uuid="31bd7674-5efc-40cb-b704-910398e5a53a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -763,7 +768,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{price} != null ? $P{twoDecimalFormat}.format($F{price}) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{pricePerDose} != null ? new DecimalFormat("#,##0.00##", $P{twoDecimalFormat}.getDecimalFormatSymbols()).format($F{pricePerDose}) : ""]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="480" y="0" width="64" height="20" backcolor="#FFFFFF" uuid="95531a59-2649-41f2-b04d-3934502f7406">
@@ -777,6 +782,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#DDDDDD"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lineTotalUsd} != null ? $P{twoDecimalFormat}.format($F{lineTotalUsd}) : ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -786,10 +792,10 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 			<frame>
 				<reportElement x="0" y="16" width="320" height="45" uuid="b2220000-0000-0000-0000-000000000101"/>
 				<staticText><reportElement style="epiFooterCell" x="0" y="0" width="180" height="15" uuid="b2220000-0000-0000-0000-000000000111"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Taxa de Câmbio]]></text></staticText>
-				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="0" width="140" height="15" uuid="b2220000-0000-0000-0000-000000000112"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{exchangeRate} != null ? ($P{twoDecimalFormat}.format($F{exchangeRate}) + " MZM/USD") : ""]]></textFieldExpression></textField>
+				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="0" width="140" height="15" uuid="b2220000-0000-0000-0000-000000000112"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{exchangeRate} != null ? ($P{twoDecimalFormat}.format($F{exchangeRate}) + " MZN/USD") : ""]]></textFieldExpression></textField>
 				<staticText><reportElement style="epiFooterCell" x="0" y="15" width="180" height="15" uuid="b2220000-0000-0000-0000-000000000121"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (USD)]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="15" width="140" height="15" uuid="b2220000-0000-0000-0000-000000000122"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$V{totalUsd} != null ? $P{twoDecimalFormat}.format($V{totalUsd}) : ""]]></textFieldExpression></textField>
-				<staticText><reportElement style="epiFooterCell" x="0" y="30" width="180" height="15" uuid="b2220000-0000-0000-0000-000000000131"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (MZM)]]></text></staticText>
+				<staticText><reportElement style="epiFooterCell" x="0" y="30" width="180" height="15" uuid="b2220000-0000-0000-0000-000000000131"/><textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Montante Total (MZN)]]></text></staticText>
 				<textField isBlankWhenNull="true"><reportElement style="epiFooterCell" x="180" y="30" width="140" height="15" uuid="b2220000-0000-0000-0000-000000000132"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><textFieldExpression><![CDATA[($F{exchangeRate} != null && $V{totalUsd} != null) ? $P{twoDecimalFormat}.format($V{totalUsd}.multiply($F{exchangeRate})) : ""]]></textFieldExpression></textField>
 			</frame>
 			<componentElement>
@@ -803,7 +809,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</datasetRun>
 					<jr:column width="90" uuid="b2220000-0000-0000-0000-000000000020">
 						<jr:columnHeader height="20"><staticText><reportElement style="epiFooterCell" x="0" y="0" width="90" height="20" uuid="b2220000-0000-0000-0000-000000000021"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Data de Envio]]></text></staticText></jr:columnHeader>
-						<jr:detailCell height="20"><textField pattern="MM/dd/yyyy" isBlankWhenNull="true"><reportElement style="epiFooterCell" x="0" y="0" width="90" height="20" uuid="b2220000-0000-0000-0000-000000000022"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{shippedDate}]]></textFieldExpression></textField></jr:detailCell>
+						<jr:detailCell height="20"><textField pattern="dd/MM/yyyy" isBlankWhenNull="true"><reportElement style="epiFooterCell" x="0" y="0" width="90" height="20" uuid="b2220000-0000-0000-0000-000000000022"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{shippedDate}]]></textFieldExpression></textField></jr:detailCell>
 					</jr:column>
 					<jr:column width="70" uuid="b2220000-0000-0000-0000-000000000030">
 						<jr:columnHeader height="20"><staticText><reportElement style="epiFooterCell" x="0" y="0" width="70" height="20" uuid="b2220000-0000-0000-0000-000000000031"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="10" isBold="true"/></textElement><text><![CDATA[Nº Volumes]]></text></staticText></jr:columnHeader>
@@ -857,7 +863,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</textElement>
 					<text><![CDATA[Data e Hora :]]></text>
 				</staticText>
-				<textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
+				<textField pattern="dd/MM/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement x="92" y="20" width="165" height="14" uuid="c060e6d9-6873-4edc-a47c-6ebe572e2bc1"/>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
@@ -885,7 +891,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</textElement>
 					<text><![CDATA[Data e Hora :]]></text>
 				</staticText>
-				<textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
+				<textField pattern="dd/MM/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement x="359" y="20" width="165" height="14" uuid="4335b0f3-3080-4363-b107-52cf3d135ace"/>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>
@@ -913,7 +919,7 @@ DIRECÇÃO NACIONAL DE SAÚDE PÚBLICA]]></text>
 					</textElement>
 					<text><![CDATA[Data e Hora :]]></text>
 				</staticText>
-				<textField pattern="MM/dd/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
+				<textField pattern="dd/MM/yyyy" isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement x="626" y="20" width="165" height="14" uuid="4f77a105-17d3-404c-b56d-6f0bb22d5503"/>
 					<textElement verticalAlignment="Middle">
 						<font size="10"/>

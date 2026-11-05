@@ -92,6 +92,7 @@ public class GenerateReportController extends BaseController {
 
     String templateName = request.getName();
     Map<String, Object> params = new HashMap<>(request.getParams());
+    // SELV3-902: fill the SELV version of a core printout (the stock event print) when there is one
     byte[] template = templateOverrideService.resolve(templateName, request.getTemplate());
 
     JasperReport templateReport = jasperTemplateService.loadReport(template);

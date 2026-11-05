@@ -2,8 +2,9 @@
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <!-- SELV3-902: SELV version of the core stockmanagement stockEvent.jrxml (v5.4.2), filled instead of
      the core template by ReportTemplateOverrideService. No stock on hand column and no pack size;
-     the quantity header names the unit (packs or doses). -->
-
+     the quantity header names the unit (packs or doses), and a net content below 1 counts as 1 in packs
+     (like core's stock card print). The copy does not follow core: when a stockmanagement upgrade
+     changes the core stockEvent.jrxml, apply the same change here. -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="stockEvent" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="BlankPage" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="20" bottomMargin="0" isFloatColumnFooter="true" whenResourceMissingType="Empty" uuid="b1b5f972-1837-533f-c4e6-65c2bff0a7df">
 	<import value="java.util.*"/>
 	<import value="java.time.LocalDate"/>
@@ -393,8 +394,8 @@ ORDER BY o.code, l.lotcode NULLS FIRST,
 				        $P{showInDoses}
 				            ? $P{decimalFormat}.format($F{quantity}).toString()
 				            : (
-				                ($F{quantity} / ($F{netcontent} == null ? 1 : $F{netcontent}))
-				                + " ( " + (($F{quantity} % ($F{netcontent} == null ? 1 : $F{netcontent})) < 0 ? "" : "+") + ($F{quantity} % ($F{netcontent} == null ? 1 : $F{netcontent})) + " )"
+				                ($F{quantity} / ($F{netcontent} == null || $F{netcontent} < 1 ? 1 : $F{netcontent}))
+				                + " ( " + (($F{quantity} % ($F{netcontent} == null || $F{netcontent} < 1 ? 1 : $F{netcontent})) < 0 ? "" : "+") + ($F{quantity} % ($F{netcontent} == null || $F{netcontent} < 1 ? 1 : $F{netcontent})) + " )"
 				              )
 				    )]]></textFieldExpression>
 			</textField>

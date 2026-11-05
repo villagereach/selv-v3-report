@@ -33,6 +33,7 @@ import org.openlmis.selv.report.exception.ReportingException;
 import org.openlmis.selv.report.service.JasperReportsViewService;
 import org.openlmis.selv.report.service.JasperTemplateService;
 import org.openlmis.selv.report.service.PermissionService;
+import org.openlmis.selv.report.service.ReportTemplateOverrideService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +58,7 @@ public class GenerateReportController extends BaseController {
   private final JasperTemplateService jasperTemplateService;
   private final JasperReportsViewService jasperReportsViewService;
   private final PermissionService permissionService;
+  private final ReportTemplateOverrideService templateOverrideService;
 
   @Value("${dateTimeFormat}")
   private String dateTimeFormat;
@@ -90,16 +92,16 @@ public class GenerateReportController extends BaseController {
 
     String templateName = request.getName();
     Map<String, Object> params = new HashMap<>(request.getParams());
+    byte[] template = templateOverrideService.resolve(templateName, request.getTemplate());
 
-    JasperReport templateReport = jasperTemplateService.loadReport(request.getTemplate());
+    JasperReport templateReport = jasperTemplateService.loadReport(template);
 
     processDataSource(params);
     processSubreports(params);
     addTranslationsAndHeaders(templateReport, params, templateName);
     addFormattingParameters(params);
 
-    byte[] reportData = jasperReportsViewService.getJasperReportsView(request.getTemplate(),
-        params);
+    byte[] reportData = jasperReportsViewService.getJasperReportsView(template, params);
 
     String format = (params.containsKey(PARAM_FORMAT) && params.get(PARAM_FORMAT) != null)
         ? String.valueOf(params.get(PARAM_FORMAT)) : "pdf";

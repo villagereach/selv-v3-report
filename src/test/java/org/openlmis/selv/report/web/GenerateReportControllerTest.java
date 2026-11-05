@@ -48,6 +48,7 @@ import org.openlmis.selv.report.exception.ReportingException;
 import org.openlmis.selv.report.service.JasperReportsViewService;
 import org.openlmis.selv.report.service.JasperTemplateService;
 import org.openlmis.selv.report.service.PermissionService;
+import org.openlmis.selv.report.service.ReportTemplateOverrideService;
 import org.openlmis.selv.report.utils.Message;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,9 @@ public class GenerateReportControllerTest {
   private PermissionService permissionService;
 
   @Mock
+  private ReportTemplateOverrideService templateOverrideService;
+
+  @Mock
   private JasperReport jasperReport;
 
   @InjectMocks
@@ -85,9 +89,24 @@ public class GenerateReportControllerTest {
     ReflectionTestUtils.setField(controller, "groupingSize", "3");
     ReflectionTestUtils.setField(controller, "timeZoneId", "UTC");
 
+    when(templateOverrideService.resolve(anyString(), any(byte[].class)))
+        .thenAnswer(invocation -> invocation.getArgument(1));
     when(jasperTemplateService.loadReport(any(byte[].class))).thenReturn(jasperReport);
     when(jasperReportsViewService.getJasperReportsView(any(byte[].class), any(Map.class)))
         .thenReturn(EXPECTED_REPORT);
+  }
+
+  @Test
+  public void shouldFillSelvTemplateWhenReportHasSelvVersion() throws Exception {
+    byte[] selvTemplate = "selv-template-data".getBytes();
+    when(templateOverrideService.resolve(TEMPLATE_NAME, TEMPLATE_DATA)).thenReturn(selvTemplate);
+    GenerateReportDto request = new GenerateReportDto(TEMPLATE_NAME, TEMPLATE_DATA,
+        new HashMap<>());
+
+    controller.generateReport(request);
+
+    verify(jasperTemplateService).loadReport(selvTemplate);
+    verify(jasperReportsViewService).getJasperReportsView(eq(selvTemplate), any(Map.class));
   }
 
   @Test

@@ -19,6 +19,7 @@ import static org.openlmis.selv.report.utils.RequestHelper.createUri;
 
 import java.util.List;
 import java.util.UUID;
+
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.exception.ValidationMessageException;
 import org.openlmis.selv.report.i18n.DashboardReportMessageKeys;
@@ -74,7 +75,7 @@ public class RightReferenceDataService extends BaseReferenceDataService<RightDto
               HttpMethod.PUT,
               RequestHelper.createEntity(authorizationService.obtainAccessToken(), rightDto),
               RightDto.class
-      ));
+        ));
     } catch (HttpStatusCodeException ex) {
       throw new ValidationMessageException(
           new Message(DashboardReportMessageKeys.ERROR_COULD_NOT_SAVE_RIGHT, rightDto.getName()));
@@ -97,7 +98,7 @@ public class RightReferenceDataService extends BaseReferenceDataService<RightDto
               HttpMethod.DELETE,
               RequestHelper.createEntity(authorizationService.obtainAccessToken(), null),
               Void.class
-          )
+        )
       );
     } catch (HttpStatusCodeException ex) {
       throw new ValidationMessageException(

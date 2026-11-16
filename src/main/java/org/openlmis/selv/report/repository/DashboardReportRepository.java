@@ -16,7 +16,6 @@
 package org.openlmis.selv.report.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.openlmis.selv.report.domain.DashboardReport;
 import org.springframework.data.domain.Page;
@@ -26,13 +25,13 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface DashboardReportRepository
-        extends PagingAndSortingRepository<DashboardReport, UUID> {
+    extends PagingAndSortingRepository<DashboardReport, UUID> {
 
   Page<DashboardReport> findByEnabled(boolean enabled, Pageable pageable);
 
   boolean existsByName(String name);
 
-  Optional<DashboardReport> findById(UUID id);
+  boolean existsByEmbeddedUuid(String embeddedUuid);
 
   List<DashboardReport> findByShowOnHomePage(boolean showOnHomePage);
 

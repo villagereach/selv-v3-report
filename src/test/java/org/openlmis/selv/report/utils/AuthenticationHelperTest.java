@@ -18,18 +18,19 @@ package org.openlmis.selv.report.utils;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openlmis.selv.report.dto.external.DtoGenerator;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.dto.external.referencedata.UserDto;
@@ -40,7 +41,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AuthenticationHelperTest {
 
   @Mock
@@ -52,10 +53,12 @@ public class AuthenticationHelperTest {
   @InjectMocks
   private AuthenticationHelper authenticationHelper;
 
-  private UUID userId = UUID.randomUUID();
+  private final UUID userId = UUID.randomUUID();
 
   @Before
   public void setUp() {
+    MockitoAnnotations.initMocks(this);
+
     Authentication authentication = mock(Authentication.class);
     when(authentication.getPrincipal()).thenReturn(userId);
 

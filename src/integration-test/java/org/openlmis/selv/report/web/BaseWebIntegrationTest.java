@@ -35,7 +35,9 @@ import guru.nidi.ramltester.RamlDefinition;
 import guru.nidi.ramltester.RamlLoaders;
 import guru.nidi.ramltester.restassured.RestAssuredClient;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
+
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -47,26 +49,27 @@ import org.openlmis.selv.report.service.PermissionService;
 import org.openlmis.selv.report.utils.AuthenticationHelper;
 import org.openlmis.selv.report.utils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @Transactional
+@ActiveProfiles("test")
 @DirtiesContext
 public abstract class BaseWebIntegrationTest {
   protected static final String BASE_URL = System.getenv("BASE_URL");
   protected static final String CONTENT_TYPE = "Content-Type";
   protected static final String RAML_ASSERT_MESSAGE =
       "HTTP request/response should match RAML definition.";
+
+  private final AtomicInteger categoryNumber = new AtomicInteger(0);
 
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(80);
@@ -101,6 +104,10 @@ public abstract class BaseWebIntegrationTest {
     RamlDefinition ramlDefinition = RamlLoaders.fromClasspath()
         .load("api-definition-raml.yaml").ignoringXheaders();
     restAssured = ramlDefinition.createRestAssured();
+  }
+
+  int getNextCategoryNumber() {
+    return this.categoryNumber.incrementAndGet();
   }
 
   protected void mockUserAuthenticated() {

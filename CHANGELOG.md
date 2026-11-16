@@ -1,8 +1,20 @@
-1.0.6 / wip
+1.1.0 / 2026-11-16
 ==================
 
 New functionality:
-* [SELV3-847](https://openlmis.atlassian.net/browse/SELV3-847): Added the EPI footer (number of volumes, number of ice packs, person responsible for packing, truck registration, trailer registration, security seal, exchange rate, total amount in USD and total amount in MZM) to the Proof of Delivery and Order reports.
+* [SELV3-886](https://openlmis.atlassian.net/browse/SELV3-886): Aligned with core openlmis-report 1.6.0 (OpenLMIS 3.20); the SELV printouts and the requisition print are kept on top of it.
+  * Added `POST /api/reports/generate`, used by the 3.20 services to render printouts
+  * Exposed Prometheus metrics at `/actuator/prometheus` and the health check used by Consul; a failing health check never removes the service from Consul ([SELV3-891](https://openlmis.atlassian.net/browse/SELV3-891))
+  * Printouts keep their current look on the new base image: text is laid out with Liberation Sans
+    (same widths as the Helvetica the PDFs use), so labels and product names are no longer cut
+  * Requisition print works again with templates from requisition 8.6.0+, which carry the supplying facility stock on hand column (SUPPLYING_FACILITY_STOCK source)
+* [SELV3-847](https://openlmis.atlassian.net/browse/SELV3-847): Added the EPI footer (number of volumes, number of ice packs, person responsible for packing, truck registration, trailer registration, security seal, exchange rate, total amount in USD and total amount in MZN) to the Proof of Delivery and Order reports.
+  * Unit prices on the Order and Proof of Delivery prints are no longer truncated to whole numbers (the price per dose shows two to four decimals); the "Selo de Segurança" footer header on the Order print no longer gets cut to "Selo de"
+  * The Order and Proof of Delivery prints show the price per dose under "Por dose" (they showed the price per pack) and fill the line "Total", so the lines add up to the total amount in USD. The Proof of Delivery cost header reads "Custo (USD)" instead of "Custo (MT)"
+  * The Order print shows quantities in packs (it showed doses), like the Proof of Delivery print and the Proof of Delivery screen
+  * The Order and Proof of Delivery prints now show the same USD total for the same order: each line Total and the total amount are the value of the shipped quantity (before, the accepted quantity once the delivery was confirmed), so the value no longer changes after receipt and rejected quantities stay visible in the quantity columns. The Order print matches each Proof of Delivery line to its own product and lot (before, the accepted quantity and total could come from another line of the same delivery), and both prints take the unit price of the shipped product version in the order's program (before, any version or program could be picked); a product shipped in a newer version than ordered is no longer left out of the Order print
+  * The Order print shows dates as day/month/year, like the Proof of Delivery print, and the Proof of Delivery print shows the shipper's name under "Aviado Por" instead of the username, like the Order print
+* [SELV3-902](https://openlmis.atlassian.net/browse/SELV3-902): The stock event print (Stock management > Transaction history, and the print offered after an issue or a receive) has no stock on hand column and no pack size, and the quantity column header says whether quantities are in packs or doses. The service fills its own version of the template whenever stockmanagement requests the `stockEvent` report from `POST /api/reports/generate`. In packs, a product with a net content below 1 counts as one dose per pack, as on the stock card print.
 
 1.0.5 / 2025-02-20
 ==================

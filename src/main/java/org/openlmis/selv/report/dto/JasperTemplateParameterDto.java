@@ -21,12 +21,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.openlmis.selv.report.domain.JasperTemplateParameter;
-import org.openlmis.selv.report.domain.JasperTemplateParameter.Exporter;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class JasperTemplateParameterDto implements Exporter {
+public class JasperTemplateParameterDto implements JasperTemplateParameter.Exporter {
 
   private UUID id;
   private String name;
@@ -40,12 +39,13 @@ public class JasperTemplateParameterDto implements Exporter {
   private String displayProperty;
   private String description;
   private Boolean required;
+  private Integer displayOrder;
   private List<String> options;
   private List<JasperTemplateParameterDependencyDto> dependencies;
 
   /**
    * Create new instance of JasperTemplateParameterDto based on given {@link
-   * org.openlmis.selv.report.domain.JasperTemplateParameter}.
+   * JasperTemplateParameter}.
    *
    * @param jasperTemplateParameter instance of Template
    * @return new instance of JasperTemplateDto.

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openlmis.selv.report.domain.JasperTemplate;
@@ -36,10 +37,13 @@ public class JasperTemplateRepositoryIntegrationTest extends
   private static final String CATEGORY_NAME = "Default Category";
 
   @Autowired
-  private ReportCategoryRepository reportCategoryRepository;
+  private JasperTemplateRepository jasperTemplateRepository;
 
   @Autowired
-  private JasperTemplateRepository jasperTemplateRepository;
+  private DashboardReportRepository dashboardReportRepository;
+
+  @Autowired
+  private ReportCategoryRepository reportCategoryRepository;
 
   @Override
   JasperTemplateRepository getRepository() {
@@ -62,6 +66,7 @@ public class JasperTemplateRepositoryIntegrationTest extends
   @Before
   public void setUp() {
     jasperTemplateRepository.deleteAll();
+    dashboardReportRepository.deleteAll();
     reportCategoryRepository.deleteAll();
   }
 

@@ -21,8 +21,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -182,6 +182,7 @@ public class DashboardReportControllerIntegrationTest
 
     // Verify
     verify(dashboardReportRepository).findById(reportId);
+    verify(dashboardReportRepository, never()).delete(any());
   }
 
   @Test
@@ -326,7 +327,7 @@ public class DashboardReportControllerIntegrationTest
         .statusCode(HttpStatus.BAD_REQUEST.value());
 
     // Verify
-    verifyZeroInteractions(dashboardReportRepository);
+    verifyNoInteractions(dashboardReportRepository);
   }
 
   @Test

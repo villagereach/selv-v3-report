@@ -17,7 +17,6 @@ package org.openlmis.selv.report.repository;
 
 import java.util.Optional;
 import java.util.UUID;
-
 import org.openlmis.selv.report.domain.ReportCategory;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -26,8 +25,6 @@ public interface ReportCategoryRepository
   Optional<ReportCategory> findByName(String name);
 
   boolean existsByName(String name);
-
-  Optional<ReportCategory> findById(UUID id);
 
   boolean existsByIdIsNotAndName(UUID id, String name);
 }

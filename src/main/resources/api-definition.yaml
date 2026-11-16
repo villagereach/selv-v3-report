@@ -31,19 +31,6 @@ schemas:
 
   - localizedMessage: !include schemas/localizedMessage.json
 
-  - localizedErrorResponse: |
-      {
-        "type": "object",
-        "$schema": "http://json-schema.org/draft-04/schema",
-        "title": "LocalizedErrorResponse",
-        "description": "Localized Error response",
-        "properties": {
-          "messageKey": { "type": "string", "title": "message key" },
-          "message": { "type": "string", "title": "message" }
-        },
-        "required": ["messageKey"]
-      }
-
   - geographicLevel: !include schemas/geographicLevel.json
 
   - geographicZone: !include schemas/geographicZone.json
@@ -70,6 +57,8 @@ schemas:
           "items": { "type": "object", "$ref":"schemas/program.json" }
       }
 
+  - stockAdjustmentReason: !include schemas/stockAdjustmentReason.json
+
   - dashboardReportDto: !include schemas/dashboardReportDto.json
 
   - dashboardReportDtoPage: !include schemas/dashboardReportDtoPage.json
@@ -77,8 +66,6 @@ schemas:
   - reportCategoryDto: !include schemas/reportCategoryDto.json
 
   - reportCategoryDtoPage: !include schemas/reportCategoryDtoPage.json
-
-  - stockAdjustmentReason: !include schemas/stockAdjustmentReason.json
 
   - stockAdjustmentReasonArray: |
       {
@@ -161,8 +148,31 @@ resourceTypes:
                 200:
 
 /api:
-
   /reports:
+      /generate:
+          displayName: Generate Report with Custom Datasource
+          post:
+              is: [ secured ]
+              description: Generates a Jasper report using a provided JSON data source and template payload. The payload contains a pre-compiled, serialized JasperReport, so this endpoint may only be called by another service using a service-level token - user tokens and API keys are rejected.
+              body:
+                  application/json:
+              responses:
+                  200:
+                      body:
+                          application/pdf:
+                          text/csv:
+                          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+                          text/html:
+                  403:
+                      headers:
+                          Keep-Alive:
+                      body:
+                          application/json:
+                              schema: localizedMessage
+                  500:
+                      body:
+                          application/json:
+                              schema: localizedMessage
       /requisitions/{id}/print:
         uriParameters:
             id:
@@ -175,6 +185,8 @@ resourceTypes:
             description: Print requisition to a pdf file.
             responses:
                 200:
+                    headers:
+                      Keep-Alive:
                     body:
                       application/pdf:
                 404:
@@ -249,29 +261,36 @@ resourceTypes:
           post:
               is: [ secured ]
               description: Create or update report template.
+              queryParameters:
+                  override:
+                      displayName: override
+                      description: Replace an existing template with the same name.
+                      type: boolean
+                      required: false
+                      repeat: false
               body:
                   multipart/form-data:
                     formParameters:
                         file:
-                             displayName: Template with .jrxml format
-                             type: file
-                             required: false
-                             repeat: false
+                            displayName: Template with .jrxml format
+                            type: file
+                            required: false
+                            repeat: false
                         name:
-                             displayName: Name of Template in database
-                             type: string
-                             required: false
-                             repeat: false
+                            displayName: Name of Template in database
+                            type: string
+                            required: false
+                            repeat: false
                         description:
-                             displayName: Description of Template
-                             type: string
-                             required: false
-                             repeat: false
+                            displayName: Description of Template
+                            type: string
+                            required: false
+                            repeat: false
                         category:
-                          displayName: Category name of the template
-                          type: string
-                          required: false
-                          repeat: false
+                            displayName: Category name of the template
+                            type: string
+                            required: false
+                            repeat: false
               responses:
                     200:
                     403:
@@ -283,6 +302,8 @@ resourceTypes:
               description: Get all templates.
               responses:
                   200:
+                      headers:
+                        Keep-Alive:
                       body:
                         application/json:
                           schema: jasperTemplateDtoArray
@@ -302,11 +323,15 @@ resourceTypes:
                   description: Delete chosen template.
                   responses:
                       204:
+                          headers:
+                            Keep-Alive:
                       403:
                           body:
                             application/json:
                                 schema: localizedMessage
                       404:
+                          headers:
+                            Keep-Alive:
                           body:
                             application/json:
                               schema: localizedMessage
@@ -315,6 +340,8 @@ resourceTypes:
                   description: Get chosen template.
                   responses:
                       200:
+                          headers:
+                            Keep-Alive:
                           body:
                             application/json:
                               schema: jasperTemplateDto
@@ -323,6 +350,8 @@ resourceTypes:
                             application/json:
                                 schema: localizedMessage
                       404:
+                          headers:
+                            Keep-Alive:
                           body:
                             application/json:
                                 schema: localizedMessage
@@ -344,10 +373,14 @@ resourceTypes:
                                 application/vnd.ms-excel:
                                 text/html:
                           403:
+                              headers:
+                                Keep-Alive:
                               body:
                                 application/json:
                                     schema: localizedMessage
                           404:
+                              headers:
+                                Keep-Alive:
                               body:
                                 application/json:
                                     schema: localizedMessage
@@ -423,6 +456,25 @@ resourceTypes:
                           body:
                             application/json:
                                 schema: localizedMessage
+      /superset:
+        /guest-token:
+          displayName: Superset guest token
+          get:
+            is: [ secured ]
+            description: Get a Superset guest token for embedding a dashboard.
+            queryParameters:
+              embeddedUuid:
+                displayName: embeddedUuid
+                type: string
+                required: true
+            responses:
+              200:
+                body:
+                  application/json:
+              401:
+                body:
+                  application/json:
+                    schema: localizedMessage
       /dashboardReports:
         displayName: Dashboard reports
         get:

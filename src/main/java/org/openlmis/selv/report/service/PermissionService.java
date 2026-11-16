@@ -16,10 +16,12 @@
 package org.openlmis.selv.report.service;
 
 import static org.openlmis.selv.report.i18n.PermissionMessageKeys.ERROR_NO_PERMISSION;
+import static org.openlmis.selv.report.i18n.PermissionMessageKeys.ERROR_SERVICE_TOKEN_REQUIRED;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import org.openlmis.selv.report.dto.external.ResultDto;
 import org.openlmis.selv.report.dto.external.referencedata.RightDto;
 import org.openlmis.selv.report.dto.external.referencedata.UserDto;
@@ -29,6 +31,8 @@ import org.openlmis.selv.report.service.referencedata.UserReferenceDataService;
 import org.openlmis.selv.report.utils.AuthenticationHelper;
 import org.openlmis.selv.report.utils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
@@ -48,8 +52,38 @@ public class PermissionService {
   @Autowired
   private UserReferenceDataService userReferenceDataService;
 
+  @Value("${auth.server.clientId}")
+  private String serviceTokenClientId;
+
+  /**
+   * Verifies the request was made with the trusted service-level token. The generate endpoint
+   * consumes pre-compiled, serialized report payloads, so it must only be callable
+   * service-to-service - user tokens and API keys are rejected.
+   */
+  public void canGenerateReports() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication instanceof OAuth2Authentication) {
+      OAuth2Authentication oauth = (OAuth2Authentication) authentication;
+      if (oauth.isClientOnly()
+          && serviceTokenClientId.equals(oauth.getOAuth2Request().getClientId())) {
+        return;
+      }
+    }
+    throw new PermissionMessageException(new Message(ERROR_SERVICE_TOKEN_REQUIRED));
+  }
+
+  /**
+   * Check whether the user has REPORT_TEMPLATES_EDIT permission.
+   */
   public void canEditReportTemplates() {
     checkPermission(REPORT_TEMPLATES_EDIT);
+  }
+
+  /**
+   * Check whether the user can manage reports - has MANAGE_DASHBOARD_REPORTS permission.
+   */
+  public void canManageReports() {
+    checkPermission(REPORTS_MANAGE);
   }
 
   /**
@@ -64,13 +98,6 @@ public class PermissionService {
    */
   public void canViewReports() {
     checkPermission(REPORTS_VIEW);
-  }
-
-  /**
-   * Check whether the user can manage reports - has MANAGE_DASHBOARD_REPORTS permission.
-   */
-  public void canManageReports() {
-    checkPermission(REPORTS_MANAGE);
   }
 
   /**
@@ -120,6 +147,13 @@ public class PermissionService {
     }
   }
 
+  private Boolean hasPermission(String rightName) {
+    UserDto user = authenticationHelper.getCurrentUser();
+    RightDto right = authenticationHelper.getRight(rightName);
+    ResultDto<Boolean> result = userReferenceDataService.hasRight(user.getId(), right.getId());
+    return null != result && result.getResult();
+  }
+
   private Boolean hasPermission(String rightName, UUID program, UUID facility, UUID warehouse) {
     OAuth2Authentication authentication = (OAuth2Authentication) SecurityContextHolder.getContext()
         .getAuthentication();
@@ -131,13 +165,6 @@ public class PermissionService {
     ResultDto<Boolean> result = userReferenceDataService.hasRight(
         user.getId(), right.getId(), program, facility, warehouse
     );
-    return null != result && result.getResult();
-  }
-
-  private Boolean hasPermission(String rightName) {
-    UserDto user = authenticationHelper.getCurrentUser();
-    RightDto right = authenticationHelper.getRight(rightName);
-    ResultDto<Boolean> result = userReferenceDataService.hasRight(user.getId(), right.getId());
     return null != result && result.getResult();
   }
 }

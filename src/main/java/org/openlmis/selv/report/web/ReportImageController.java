@@ -15,12 +15,13 @@
 
 package org.openlmis.selv.report.web;
 
+import static org.openlmis.selv.report.i18n.ReportImageMessageKeys.ERROR_NOT_FOUND;
+
 import java.util.Collections;
 import java.util.UUID;
 import org.openlmis.selv.report.domain.ReportImage;
 import org.openlmis.selv.report.exception.NotFoundMessageException;
 import org.openlmis.selv.report.exception.ReportingException;
-import org.openlmis.selv.report.i18n.ReportImageMessageKeys;
 import org.openlmis.selv.report.repository.ReportImageRepository;
 import org.openlmis.selv.report.service.PermissionService;
 import org.openlmis.selv.report.service.ReportImageService;
@@ -104,13 +105,8 @@ public class ReportImageController extends BaseController {
       @PathVariable("id") UUID reportImageId) {
     permissionService.canViewReports();
 
-    ReportImage reportImage = reportImageRepository.findOne(reportImageId);
-    if (reportImage == null) {
-      throw new NotFoundMessageException(
-          new Message(ReportImageMessageKeys.ERROR_NOT_FOUND));
-    } else {
-      return reportImage;
-    }
+    return reportImageRepository.findById(reportImageId)
+        .orElseThrow(() -> new NotFoundMessageException(new Message(ERROR_NOT_FOUND)));
   }
 
   /**
@@ -124,12 +120,8 @@ public class ReportImageController extends BaseController {
       @PathVariable("id") UUID reportImageId) {
     permissionService.canEditReportTemplates();
 
-    ReportImage reportImage = reportImageRepository.findOne(reportImageId);
-    if (reportImage == null) {
-      throw new NotFoundMessageException(
-          new Message(ReportImageMessageKeys.ERROR_NOT_FOUND));
-    } else {
-      reportImageRepository.delete(reportImage);
-    }
+    ReportImage reportImage = reportImageRepository.findById(reportImageId)
+        .orElseThrow(() -> new NotFoundMessageException(new Message(ERROR_NOT_FOUND)));
+    reportImageRepository.delete(reportImage);
   }
 }

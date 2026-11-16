@@ -24,4 +24,5 @@ public class ReportCategoryMessageKeys extends MessageKeys {
       "report.error.reportCategory.id.mismatch";
   public static final String ERROR_CATEGORY_ALREADY_ASSIGNED =
       "report.error.reportCategory.already.assigned";
+
 }

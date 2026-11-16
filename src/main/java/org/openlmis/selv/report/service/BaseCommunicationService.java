@@ -248,6 +248,7 @@ public abstract class BaseCommunicationService<T> {
     } catch (HttpStatusCodeException ex) {
       if (HttpStatus.UNAUTHORIZED == ex.getStatusCode()) {
         task.run();
+        return;
       }
       throw ex;
     }

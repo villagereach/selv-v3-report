@@ -13,18 +13,18 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.selv.report.databuilder;
+package org.openlmis.selv.report.utils;
 
 import java.util.UUID;
 import org.apache.commons.lang.RandomStringUtils;
 import org.openlmis.selv.report.domain.DashboardReport;
 import org.openlmis.selv.report.domain.ReportCategory;
-import org.openlmis.selv.report.utils.ReportType;
 
 public class DashboardReportDataBuilder {
   private final UUID id = UUID.randomUUID();
   private String name = RandomStringUtils.random(6);
   private String url = "http://example.com";
+  private String embeddedUuid = null;
   private ReportType type = ReportType.SUPERSET;
   private boolean enabled = true;
   private boolean showOnHomePage = false;
@@ -81,6 +81,7 @@ public class DashboardReportDataBuilder {
     return new DashboardReport(
       name,
       url,
+      embeddedUuid,
       type,
       enabled,
       showOnHomePage,

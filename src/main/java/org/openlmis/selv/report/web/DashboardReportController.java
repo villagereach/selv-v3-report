@@ -15,6 +15,8 @@
 
 package org.openlmis.selv.report.web;
 
+import static org.openlmis.selv.report.web.DashboardReportController.RESOURCE_PATH;
+
 import java.util.UUID;
 import javax.validation.Valid;
 import org.openlmis.selv.report.dto.DashboardReportDto;
@@ -38,7 +40,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 @Transactional
-@RequestMapping(DashboardReportController.RESOURCE_PATH)
+@RequestMapping(RESOURCE_PATH)
 public class DashboardReportController extends BaseController {
   public static final String RESOURCE_PATH = "/api/reports/dashboardReports";
 

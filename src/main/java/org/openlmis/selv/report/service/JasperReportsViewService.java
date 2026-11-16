@@ -15,37 +15,30 @@
 
 package org.openlmis.selv.report.service;
 
-import static java.io.File.createTempFile;
-import static net.sf.jasperreports.engine.export.JRHtmlExporterParameter.IS_USING_IMAGES_TO_ALIGN;
-import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
-import static org.openlmis.selv.report.i18n.JasperMessageKeys.ERROR_JASPER_FILE_CREATION;
+import static org.openlmis.selv.report.i18n.JasperMessageKeys.ERROR_JASPER_REPORT_FORMAT_UNKNOWN;
+import static org.openlmis.selv.report.i18n.JasperMessageKeys.ERROR_JASPER_REPORT_GENERATION;
 import static org.openlmis.selv.report.i18n.MessageKeys.REQUISITION_ERROR_IO;
 import static org.openlmis.selv.report.i18n.MessageKeys.REQUISITION_ERROR_JASPER_FILE_FORMAT;
-import static org.openlmis.selv.report.i18n.ReportingMessageKeys.ERROR_REPORTING_CLASS_NOT_FOUND;
-import static org.openlmis.selv.report.i18n.ReportingMessageKeys.ERROR_REPORTING_IO;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.openlmis.selv.report.domain.JasperTemplate;
@@ -55,28 +48,20 @@ import org.openlmis.selv.report.dto.external.requisition.RequisitionTemplateColu
 import org.openlmis.selv.report.dto.external.requisition.RequisitionTemplateDto;
 import org.openlmis.selv.report.dto.requisition.RequisitionReportDto;
 import org.openlmis.selv.report.exception.JasperReportViewException;
+import org.openlmis.selv.report.utils.JasperReportDeserializer;
 import org.openlmis.selv.report.utils.ReportUtils;
 import org.openlmis.selv.report.web.requisition.RequisitionReportDtoBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.jasperreports.AbstractJasperReportsView;
-import org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView;
-import org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView;
-import org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView;
-import org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView;
-import org.springframework.web.servlet.view.jasperreports.JasperReportsXlsxView;
 
 @Service
 public class JasperReportsViewService {
+  private static final String PARAM_DATASOURCE = "datasource";
 
   private static final String REQUISITION_LINE_REPORT_DIR = "/reports/requisitionLines.jrxml";
   private static final String REQUISITION_REPORT_DIR = "/reports/requisition.jrxml";
 
-  private static final String DATASOURCE = "datasource";
   private static final String DATE_FORMAT = "dateFormat";
   private static final String DECIMAL_FORMAT = "decimalFormat";
 
@@ -99,73 +84,104 @@ public class JasperReportsViewService {
   private DataSource replicationDataSource;
 
   @Autowired
+  private JasperReportDeserializer reportDeserializer;
+
+  @Autowired
   private RequisitionReportDtoBuilder requisitionReportDtoBuilder;
 
   /**
-   * Create Jasper Report View.
-   * Create Jasper Report (".jasper" file) from bytes from Template entity.
-   * Set 'Jasper' exporter parameters, JDBC data source, web application context, url to file.
+   * Create Jasper Report View. Create Jasper Report (".jasper" file) from bytes from Template
+   * entity. Set 'Jasper' exporter parameters, JDBC data source, web application context, url to
+   * file.
+   *
+   * @param template template that will be used to create a view (byte[])
+   * @param params map of parameters
+   * @return created jasper view.
+   * @throws JasperReportViewException if there will be any problem with creating the view.
+   */
+  public byte[] getJasperReportsView(byte[] template, Map<String, Object> params)
+      throws JasperReportViewException {
+
+    try {
+      JasperReport jasperReport = reportDeserializer.deserialize(template);
+
+      JasperPrint jasperPrint;
+      if (params.containsKey(PARAM_DATASOURCE) && params.get(PARAM_DATASOURCE) != null) {
+        Object dataSourceParam = params.get(PARAM_DATASOURCE);
+        JRDataSource jrDataSource;
+        if (dataSourceParam instanceof JRDataSource) {
+          jrDataSource = (JRDataSource) dataSourceParam;
+        } else if (dataSourceParam instanceof Collection) {
+          jrDataSource = new JRBeanCollectionDataSource((Collection<?>) dataSourceParam);
+        } else {
+          throw new JasperReportViewException(ERROR_JASPER_REPORT_GENERATION);
+        }
+        jasperPrint = JasperFillManager.fillReport(jasperReport, params, jrDataSource);
+      } else {
+        try (Connection connection = replicationDataSource.getConnection()) {
+          jasperPrint = JasperFillManager.fillReport(jasperReport, params, connection);
+        }
+      }
+      return prepareReport(jasperPrint, params);
+    } catch (IllegalArgumentException iae) {
+      throw new JasperReportViewException(iae, ERROR_JASPER_REPORT_FORMAT_UNKNOWN,
+          iae.getMessage());
+    } catch (Exception e) {
+      throw new JasperReportViewException(e, ERROR_JASPER_REPORT_GENERATION);
+    }
+  }
+
+  /**
+   * Create Jasper Report View. Create Jasper Report (".jasper" file) from bytes from Template
+   * entity. Set 'Jasper' exporter parameters, JDBC data source, web application context, url to
+   * file.
    *
    * @param jasperTemplate template that will be used to create a view
-   * @param request  it is used to take web application context
+   * @param params         map of parameters
    * @return created jasper view.
    * @throws JasperReportViewException if there will be any problem with creating the view.
    */
-  public JasperReportsMultiFormatView getJasperReportsView(
-      JasperTemplate jasperTemplate, HttpServletRequest request) throws JasperReportViewException {
-    JasperReportsMultiFormatView jasperView = new JasperReportsMultiFormatView();
-
-    setFormatMappings(jasperView);
-
-    jasperView.setUrl(getReportUrlForReportData(jasperTemplate));
-    jasperView.setJdbcDataSource(replicationDataSource);
-
-    if (getApplicationContext(request) != null) {
-      jasperView.setApplicationContext(getApplicationContext(request));
-    }
-
-    return jasperView;
+  public byte[] getJasperReportsView(JasperTemplate jasperTemplate,
+                                     Map<String, Object> params) throws JasperReportViewException {
+    return getJasperReportsView(jasperTemplate.getData(), params);
   }
 
   /**
-   * Get application context from servlet.
-   */
-  public WebApplicationContext getApplicationContext(HttpServletRequest servletRequest) {
-    ServletContext servletContext = servletRequest.getSession().getServletContext();
-    return WebApplicationContextUtils.getWebApplicationContext(servletContext);
-  }
-
-  /**
-   * Create custom Jasper Report View for printing a requisition.
+   * Render a requisition printout as a PDF.
    *
    * @param requisition requisition to render report for.
-   * @param request  it is used to take web application context.
-   * @return created jasper view.
-   * @throws JasperReportViewException if there will be any problem with creating the view.
+   * @return the PDF file.
+   * @throws JasperReportViewException if there will be any problem with creating the report.
    */
-  public ModelAndView getRequisitionJasperReportView(
-      RequisitionDto requisition, HttpServletRequest request) throws JasperReportViewException {
+  public byte[] getRequisitionJasperReportView(RequisitionDto requisition)
+      throws JasperReportViewException {
     RequisitionReportDto reportDto = requisitionReportDtoBuilder.build(requisition);
     RequisitionTemplateDto template = requisition.getTemplate();
 
     Map<String, Object> params = ReportUtils.createParametersMap();
     params.put("subreport", createCustomizedRequisitionLineSubreport(
         template, requisition.getStatus()));
-    params.put(DATASOURCE, Collections.singletonList(reportDto));
     params.put("template", template);
     params.put(DATE_FORMAT, dateFormat);
     params.put(DECIMAL_FORMAT, createDecimalFormat());
     params.put("currencyDecimalFormat",
         NumberFormat.getCurrencyInstance(getLocaleFromService()));
 
-    JasperReportsMultiFormatView jasperView = new JasperReportsMultiFormatView();
-    setExportParams(jasperView);
-    setCustomizedJasperTemplateForRequisitionReport(jasperView);
-
-    if (getApplicationContext(request) != null) {
-      jasperView.setApplicationContext(getApplicationContext(request));
+    try (InputStream inputStream = getClass().getResourceAsStream(REQUISITION_REPORT_DIR)) {
+      JasperReport report = JasperCompileManager.compileReport(inputStream);
+      JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,
+          new JRBeanCollectionDataSource(Collections.singletonList(reportDto)));
+      return prepareReport(jasperPrint, params);
+    } catch (IOException err) {
+      throw new JasperReportViewException(err, REQUISITION_ERROR_IO, err.getMessage());
+    } catch (JRException err) {
+      throw new JasperReportViewException(
+          err, REQUISITION_ERROR_JASPER_FILE_FORMAT, err.getMessage());
     }
-    return new ModelAndView(jasperView, params);
+  }
+
+  protected Locale getLocaleFromService() {
+    return new Locale(defaultLocale, currencyLocale);
   }
 
   private JasperDesign createCustomizedRequisitionLineSubreport(RequisitionTemplateDto template,
@@ -191,53 +207,6 @@ public class JasperReportsViewService {
     }
   }
 
-  private void setFormatMappings(JasperReportsMultiFormatView jasperView) {
-    Map<String, Class<? extends AbstractJasperReportsView>> formatMappings = new HashMap<>();
-    formatMappings.put("csv", JasperReportsCsvView.class);
-    formatMappings.put("html", JasperReportsHtmlView.class);
-    formatMappings.put("pdf", JasperReportsPdfView.class);
-    formatMappings.put("xls", JasperReportsXlsView.class);
-    formatMappings.put("xlsx", JasperReportsXlsxView.class);
-    jasperView.setFormatMappings(formatMappings);
-  }
-
-  /**
-   * Create ".jasper" file with byte array from Template.
-   *
-   * @return Url to ".jasper" file.
-   */
-  private String getReportUrlForReportData(JasperTemplate jasperTemplate)
-      throws JasperReportViewException {
-    File tmpFile;
-
-    try {
-      tmpFile = createTempFile(jasperTemplate.getName() + "_temp", ".jasper");
-    } catch (IOException exp) {
-      throw new JasperReportViewException(
-          exp, ERROR_JASPER_FILE_CREATION
-      );
-    }
-
-    try (ObjectInputStream inputStream =
-             new ObjectInputStream(new ByteArrayInputStream(jasperTemplate.getData()))) {
-      JasperReport jasperReport = (JasperReport) inputStream.readObject();
-
-      try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-           ObjectOutputStream out = new ObjectOutputStream(bos)) {
-
-        out.writeObject(jasperReport);
-        writeByteArrayToFile(tmpFile, bos.toByteArray());
-
-        return tmpFile.toURI().toURL().toString();
-      }
-    } catch (IOException exp) {
-      throw new JasperReportViewException(exp, ERROR_REPORTING_IO, exp.getMessage());
-    } catch (ClassNotFoundException exp) {
-      throw new JasperReportViewException(
-          exp, ERROR_REPORTING_CLASS_NOT_FOUND, JasperReport.class.getName());
-    }
-  }
-
   private DecimalFormat createDecimalFormat() {
     DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
     decimalFormatSymbols.setGroupingSeparator(groupingSeparator.charAt(0));
@@ -246,38 +215,25 @@ public class JasperReportsViewService {
     return decimalFormat;
   }
 
-  protected Locale getLocaleFromService() {
-    return new Locale(defaultLocale, currencyLocale);
+  private byte[] prepareReport(JasperPrint jasperPrint, Map<String, Object> params)
+      throws JRException {
+    return getJasperExporter((String) params.get("format"), jasperPrint).exportReport();
   }
 
-  /**
-   * Set export parameters in jasper view.
-   */
-  private void setExportParams(JasperReportsMultiFormatView jasperView) {
-    Map<JRExporterParameter, Object> reportFormatMap = new HashMap<>();
-    reportFormatMap.put(IS_USING_IMAGES_TO_ALIGN, false);
-    jasperView.setExporterParameters(reportFormatMap);
-  }
-
-  private void setCustomizedJasperTemplateForRequisitionReport(
-      JasperReportsMultiFormatView jasperView) throws JasperReportViewException {
-    try (InputStream inputStream = getClass().getResourceAsStream(REQUISITION_REPORT_DIR)) {
-      File reportTempFile = createTempFile("requisitionReport_temp", ".jasper");
-      JasperReport report = JasperCompileManager.compileReport(inputStream);
-
-      try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ObjectOutputStream out = new ObjectOutputStream(bos)) {
-
-        out.writeObject(report);
-        writeByteArrayToFile(reportTempFile, bos.toByteArray());
-
-        jasperView.setUrl(reportTempFile.toURI().toURL().toString());
-      }
-    } catch (IOException err) {
-      throw new JasperReportViewException(err, REQUISITION_ERROR_IO, err.getMessage());
-    } catch (JRException err) {
-      throw new JasperReportViewException(
-          err, REQUISITION_ERROR_JASPER_FILE_FORMAT, err.getMessage());
+  private JasperExporter getJasperExporter(String format, JasperPrint jasperPrint) {
+    switch (format) {
+      case "pdf":
+        return new JasperPdfExporter(jasperPrint);
+      case "csv":
+        return new JasperCsvExporter(jasperPrint);
+      case "xls":
+        return new JasperXlsExporter(jasperPrint);
+      case "xlsx":
+        return new JasperXlsxExporter(jasperPrint);
+      case "html":
+        return new JasperHtmlExporter(jasperPrint);
+      default:
+        throw new IllegalArgumentException(format);
     }
   }
 }

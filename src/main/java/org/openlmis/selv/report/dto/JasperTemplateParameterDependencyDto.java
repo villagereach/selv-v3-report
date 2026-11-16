@@ -21,15 +21,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.openlmis.selv.report.domain.JasperTemplateParameterDependency;
-import org.openlmis.selv.report.domain.JasperTemplateParameterDependency.Exporter;
-import org.openlmis.selv.report.domain.JasperTemplateParameterDependency.Importer;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class JasperTemplateParameterDependencyDto implements
-    Importer, Exporter {
+    JasperTemplateParameterDependency.Importer, JasperTemplateParameterDependency.Exporter {
 
   private UUID id;
   private String dependency;
@@ -38,7 +36,7 @@ public class JasperTemplateParameterDependencyDto implements
 
   /**
    * Create new instance of JasperTemplateParameterDependencyDto based on given {@link
-   * org.openlmis.selv.report.domain.JasperTemplateParameterDependency}.
+   * JasperTemplateParameterDependency}.
    *
    * @param dependency instance of parameter dependency
    * @return new instance of JasperTemplateParameterDependencyDto.

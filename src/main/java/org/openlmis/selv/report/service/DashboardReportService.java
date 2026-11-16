@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.selv.report.domain.DashboardReport;
 import org.openlmis.selv.report.domain.ReportCategory;
 import org.openlmis.selv.report.dto.DashboardReportDto;
@@ -58,8 +60,8 @@ public class DashboardReportService {
    */
   @Autowired
   public DashboardReportService(ReportCategoryRepository reportCategoryRepository,
-        PermissionService permissionService, DashboardReportRepository dashboardReportRepository,
-        RightReferenceDataService rightReferenceDataService) {
+      PermissionService permissionService, DashboardReportRepository dashboardReportRepository,
+      RightReferenceDataService rightReferenceDataService) {
     this.reportCategoryRepository = reportCategoryRepository;
     this.dashboardReportRepository = dashboardReportRepository;
     this.rightReferenceDataService = rightReferenceDataService;
@@ -107,6 +109,7 @@ public class DashboardReportService {
     if (!showOnHomePage) {
       permissionService.canViewReports();
     }
+
     List<String> accessibleRights = permissionService.filterRightsForUser(
         dashboardReportRepository.findByEnabled(true, pageable).getContent().stream()
             .map(DashboardReport::getRightName)
@@ -154,6 +157,7 @@ public class DashboardReportService {
    */
   public DashboardReportDto createDashboardReport(DashboardReportDto dto) {
     permissionService.canManageReports();
+    validateUrlOrEmbeddedUuid(dto);
 
     boolean reportExists = dashboardReportRepository.existsByName(dto.getName());
     if (reportExists) {
@@ -192,6 +196,7 @@ public class DashboardReportService {
    */
   public DashboardReportDto updateDashboardReport(UUID id, DashboardReportDto dashboardReportDto) {
     permissionService.canManageReports();
+    validateUrlOrEmbeddedUuid(dashboardReportDto);
 
     if (dashboardReportDto.getId() != null && !Objects.equals(dashboardReportDto.getId(), id)) {
       throw new ValidationMessageException(new Message(
@@ -217,6 +222,14 @@ public class DashboardReportService {
   private void updateFrom(DashboardReportDto newReport, DashboardReport reportToUpdate) {
     reportToUpdate.updateFrom(newReport);
     reportToUpdate.setCategory(getCategoryOrThrow(newReport));
+  }
+
+  // A report needs either a URL or an Embedded UUID (Superset embedded dashboards use the latter).
+  private void validateUrlOrEmbeddedUuid(DashboardReportDto dto) {
+    if (StringUtils.isBlank(dto.getUrl()) && StringUtils.isBlank(dto.getEmbeddedUuid())) {
+      throw new ValidationMessageException(new Message(
+          DashboardReportMessageKeys.ERROR_URL_OR_EMBEDDED_UUID_REQUIRED));
+    }
   }
 
   /**
@@ -250,7 +263,7 @@ public class DashboardReportService {
 
     if (null == transformedName) {
       throw new ValidationMessageException(new Message(
-          DashboardReportMessageKeys.ERROR_COULD_NOT_SAVE_RIGHT));
+        DashboardReportMessageKeys.ERROR_COULD_NOT_SAVE_RIGHT));
     }
 
     RightDto rightToSave = new RightDto();

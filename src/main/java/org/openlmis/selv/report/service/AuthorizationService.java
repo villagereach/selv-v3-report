@@ -74,5 +74,4 @@ public class AuthorizationService {
   void setRestTemplate(RestOperations restTemplate) {
     this.restTemplate = restTemplate;
   }
-  
 }

@@ -39,12 +39,12 @@ public class ReportCategory extends BaseEntity {
 
   /**
    * Create a new instance of a Report category based on data.
-   * from {@link Importer}.
+   * from {@link ReportCategory.Importer}.
    *
-   * @param importer instance of {@link Importer}.
+   * @param importer instance of {@link ReportCategory.Importer}.
    * @return new instance of a report category.
    */
-  public static ReportCategory newInstance(Importer importer) {
+  public static ReportCategory newInstance(ReportCategory.Importer importer) {
     ReportCategory category = new ReportCategory();
     category.setId(importer.getId());
     category.updateFrom(importer);
@@ -57,7 +57,7 @@ public class ReportCategory extends BaseEntity {
    *
    * @param importer Report category importer with new values.
    */
-  public void updateFrom(Importer importer) {
+  public void updateFrom(ReportCategory.Importer importer) {
     this.name = importer.getName();
   }
 
@@ -66,7 +66,7 @@ public class ReportCategory extends BaseEntity {
    *
    * @param exporter exporter to export to.
    */
-  public void export(Exporter exporter) {
+  public void export(ReportCategory.Exporter exporter) {
     exporter.setId(id);
     exporter.setName(name);
   }

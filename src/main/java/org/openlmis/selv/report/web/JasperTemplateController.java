@@ -16,23 +16,30 @@
 package org.openlmis.selv.report.web;
 
 import static org.apache.commons.lang3.BooleanUtils.isNotFalse;
+import static org.openlmis.selv.report.i18n.JasperMessageKeys.ERROR_JASPER_TEMPLATE_NOT_FOUND;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+
 import org.openlmis.selv.report.domain.JasperTemplate;
 import org.openlmis.selv.report.dto.JasperTemplateDto;
 import org.openlmis.selv.report.dto.external.referencedata.UserDto;
 import org.openlmis.selv.report.exception.JasperReportViewException;
 import org.openlmis.selv.report.exception.NotFoundMessageException;
 import org.openlmis.selv.report.exception.ReportingException;
-import org.openlmis.selv.report.i18n.JasperMessageKeys;
 import org.openlmis.selv.report.repository.JasperTemplateRepository;
 import org.openlmis.selv.report.service.JasperReportsViewService;
 import org.openlmis.selv.report.service.JasperTemplateService;
@@ -44,17 +51,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView;
 
 @Controller
 @Transactional
@@ -106,7 +114,9 @@ public class JasperTemplateController extends BaseController {
   @ResponseStatus(HttpStatus.OK)
   public void createJasperReportTemplate(
       @RequestPart("file") MultipartFile file, String name, String description,
-      String[] requiredRights, String category) throws ReportingException {
+      String[] requiredRights, String category,
+      @RequestParam(value = "override", required = false) Boolean override)
+      throws ReportingException {
     permissionService.canEditReportTemplates();
 
     LOGGER.debug("Saving template with name: " + name);
@@ -115,7 +125,7 @@ public class JasperTemplateController extends BaseController {
         ? Collections.emptyList() : Arrays.asList(requiredRights);
 
     JasperTemplate template = jasperTemplateService
-        .saveTemplate(file, name, description, rightList, category);
+        .saveTemplate(file, name, description, rightList, category, override);
 
     LOGGER.debug("Saved template with id: " + template.getId());
   }
@@ -146,11 +156,9 @@ public class JasperTemplateController extends BaseController {
   public JasperTemplateDto getTemplate(@PathVariable("id") UUID templateId) {
     permissionService.canViewReports();
 
-    JasperTemplate jasperTemplate = jasperTemplateRepository.findOne(templateId);
-    if (jasperTemplate == null) {
-      throw new NotFoundMessageException(new Message(
-          JasperMessageKeys.ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId));
-    }
+    JasperTemplate jasperTemplate = jasperTemplateRepository.findById(templateId)
+        .orElseThrow(() -> new NotFoundMessageException(
+            new Message(ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId)));
 
     return JasperTemplateDto.newInstance(jasperTemplate);
   }
@@ -164,13 +172,10 @@ public class JasperTemplateController extends BaseController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteTemplate(@PathVariable("id") UUID templateId) {
     permissionService.canEditReportTemplates();
-    JasperTemplate jasperTemplate = jasperTemplateRepository.findOne(templateId);
-    if (jasperTemplate == null) {
-      throw new NotFoundMessageException(new Message(
-          JasperMessageKeys.ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId));
-    } else {
-      jasperTemplateRepository.delete(jasperTemplate);
-    }
+    JasperTemplate jasperTemplate = jasperTemplateRepository.findById(templateId)
+        .orElseThrow(() -> new NotFoundMessageException(
+            new Message(ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId)));
+    jasperTemplateRepository.delete(jasperTemplate);
   }
 
   /**
@@ -183,15 +188,13 @@ public class JasperTemplateController extends BaseController {
    */
   @RequestMapping(value = "/{id}/{format}", method = RequestMethod.GET)
   @ResponseBody
-  public ModelAndView generateReport(
+  public ResponseEntity<byte[]> generateReport(
       HttpServletRequest request, @PathVariable("id") UUID templateId,
-      @PathVariable("format") String format) throws JasperReportViewException {
-    JasperTemplate template = jasperTemplateRepository.findOne(templateId);
-
-    if (template == null) {
-      throw new NotFoundMessageException(new Message(
-          JasperMessageKeys.ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId));
-    }
+      @PathVariable("format") String format, @RequestParam(defaultValue = "en") String lang)
+      throws JasperReportViewException {
+    JasperTemplate template = jasperTemplateRepository.findById(templateId)
+        .orElseThrow(() -> new NotFoundMessageException(
+            new Message(ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId)));
 
     if (isNotFalse(template.getVisible())) {
       // if template is hidden it means that it is generated from other view than 'report view'
@@ -201,13 +204,24 @@ public class JasperTemplateController extends BaseController {
     }
 
     List<String> requiredRights = template.getRequiredRights();
-    permissionService.validatePermissions(
-        requiredRights.toArray(new String[requiredRights.size()]));
+    permissionService.validatePermissions(requiredRights.toArray(new String[0]));
 
     Map<String, Object> map = jasperTemplateService.mapRequestParametersToTemplate(
         request, template
     );
     map.putAll(jasperTemplateService.mapReportImagesToTemplate(template));
+
+    try {
+      JasperReport templateReport = jasperTemplateService.loadReport(template);
+      map.putAll(jasperTemplateService.getLocaleBundleParameters(lang));
+      map.putAll(jasperTemplateService.getMapSubreportGlobalHeaderParameters(templateReport));
+    } catch (ReportingException e) {
+      LOGGER.warn("Cannot compile template {}", template.getName(), e);
+    } catch (MalformedURLException e) {
+      LOGGER.warn("Cannot load translation bundle for {}", template.getName(), e);
+    } catch (JRException | IOException ex) {
+      LOGGER.warn("Cannot load GlobalHeaderTemplate for {}", template.getName(), ex);
+    }
 
     map.put("format", format);
     map.put("imagesDirectory", "images/");
@@ -219,6 +233,7 @@ public class JasperTemplateController extends BaseController {
     DecimalFormat decimalFormat = new DecimalFormat("", decimalFormatSymbols);
     decimalFormat.setGroupingSize(Integer.parseInt(groupingSize));
     map.put("decimalFormat", decimalFormat);
+
     // SELV3-847: two-decimal money formatter for the PoD/Order report EPI footer (USD/MZM totals).
     // It owns its symbols (grouping + decimal separator from config) so the existing reports that
     // rely on `decimalFormat` stay byte-for-byte unchanged. Only PoD and order declare this param.
@@ -232,16 +247,25 @@ public class JasperTemplateController extends BaseController {
     UserDto currentUser = authenticationHelper.getCurrentUser();
     map.put("userId", currentUser.getId().toString());
 
-    JasperReportsMultiFormatView jasperView = jasperReportsViewService
-        .getJasperReportsView(template, request);
+    byte[] bytes = jasperReportsViewService.getJasperReportsView(template, map);
 
+    MediaType mediaType;
+    if ("csv".equals(format)) {
+      mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
+    } else if ("xls".equals(format) || "xlsx".equals(format)) {
+      mediaType = new MediaType("application",
+          "vnd.openxmlformats-officedocument.spreadsheetml.sheet", StandardCharsets.UTF_8);
+    } else if ("html".equals(format)) {
+      mediaType = MediaType.TEXT_HTML;
+    } else {
+      mediaType = MediaType.APPLICATION_PDF;
+    }
     String fileName = template.getName().replaceAll("\\s+", "_");
-    String contentDisposition = "inline; filename=" + fileName + "." + format;
 
-    jasperView
-        .getContentDispositionMappings()
-        .setProperty(format, contentDisposition.toLowerCase(Locale.ENGLISH));
-
-    return new ModelAndView(jasperView, map);
+    return ResponseEntity
+        .ok()
+        .contentType(mediaType)
+        .header("Content-Disposition", "inline; filename=" + fileName + "." + format)
+        .body(bytes);
   }
 }

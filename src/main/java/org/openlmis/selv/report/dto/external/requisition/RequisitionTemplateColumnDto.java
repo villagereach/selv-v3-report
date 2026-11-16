@@ -17,11 +17,13 @@ package org.openlmis.selv.report.dto.external.requisition;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class RequisitionTemplateColumnDto {
 
   private String name;
